@@ -35,7 +35,7 @@ public class CommandDealer {
         String[] splitCommand = command.split(" ");
         switch(splitCommand[0]){
             case "login" :
-                String type = cp.getParameter(command, );
+                String type = cp.getParameter(command, "-t");
                 String id = "";
                 String password = "";
                 Scanner input = new Scanner(System.in);
