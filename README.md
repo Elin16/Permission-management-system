@@ -83,11 +83,40 @@ $ l
 
 ### 查询页 s t
 健康日报/入校申请/出校申请/IO相关
+基本查询需求
 ```bash
-$ show-health-report
-$ show-entry-app
-$ show-leave-app
-$ show-statistics
+# 查询学生过去n天的每日填报信息
+$ show-health-report -d <n days>
+# 查询学生的入校权限
+$ show-entry-perm 
+#查询学生的入校申请、出校申请，支持按状态（待审核、已同意、已拒绝）进行筛选；
+$ show-entry-app -s <wait/ack/ref>
+$ show-leave-app -s <wait/ack/ref>
+# 查询学生（从当天算起）过去一年的离校总时长
+$ show-yearly-leave-time-count 
+```
+进阶查询
+```bash
+r: range n: number s:state d: day oos: out of school
+
+# 过去 n 天尚未批准的入校申请和出校申请数量及详细信息；
+$ show-entry-app -s <wait> -d <n days>
+# 前 n 个提交入校申请最多的学生，支持按多级范围（全校、院系、班级）进行筛选；
+$ show-most-entry-app -n <num student> -r <0/dept id /class id> 
+# 前 n 个平均离校时间最长的学生，支持按多级范围（全校、院系、班级）进行筛选；
+$ show-most-leave-time -n <num student> -r <0/dept id /class id>
+#  已出校但尚未返回校园（即离校状态）的学生数量、个人信息及各自的离校时间；
+$ show-leave-oos 
+# 未提交出校申请但离校状态超过 24h 的学生数量、个人信息；
+$ show-stay-oos
+# 已提交出校申请但未离校的学生数量、个人信息；
+$ show-leave-is
+# 过去 n 天一直在校未曾出校的学生，支持按多级范围（全校、院系、班级）进行筛选；
+$ show-always-is -d <n days> -r <u/dept id /class id>
+# 连续 n 天填写“健康日报”时间（精确到分钟）完全一致的学生数量，个人信息；
+$ show-exactly-report -d <n days>
+# 过去 n 天每个院系学生产生最多出入校记录的校区。
+$ show-most-ios-campus
 ```
 ### 审批页 t
 老师审批 ps 审批页也有查询功能
