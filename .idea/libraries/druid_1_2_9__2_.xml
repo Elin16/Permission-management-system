@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="druid-1.2.9 (2)">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/pms-demo/lib/druid-1.2.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

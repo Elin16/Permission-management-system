@@ -54,7 +54,13 @@ public class DBRepo {
     public int insert(String sql) throws Exception{
         Statement stmt = conn.createStatement();
         System.out.println(sql);
-        return stmt.executeUpdate(sql);
+        try{
+            int infulencedRows = stmt.executeUpdate(sql);
+            return infulencedRows;
+        } catch (Exception e){
+            System.out.println("Insertion failed!");
+        }
+        return 0;
     }
 
     private static void prepareAndConnect() throws Exception {

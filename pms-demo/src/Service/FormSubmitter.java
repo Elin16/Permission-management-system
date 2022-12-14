@@ -1,3 +1,5 @@
+package Service;
+
 import java.io.*;
 
 import Entity.EntryApplication;
@@ -20,9 +22,9 @@ public class FormSubmitter {
     public void setStudentId(String studentId){
         this.studentId = studentId;
     }
-    private HealthReport getHealthReport() {
+    public HealthReport getHealthReport() {
         JSONParser jsonP = new JSONParser();
-        String filepath = "forms/report.json";
+        String filepath = "pms-demo/forms/report.json";
         try{
             FileReader file = new FileReader(filepath);
             JSONObject jsonO = (JSONObject) jsonP.parse(file);
@@ -42,9 +44,9 @@ public class FormSubmitter {
         }
         return null;
     }
-    private EntryApplication getEntryApplication(){
+    public EntryApplication getEntryApplication(){
         JSONParser jsonP = new JSONParser();
-        String filepath = "forms/entry_application.json";
+        String filepath = "pms-demo/forms/entry_application.json";
         try{
             FileReader file = new FileReader(filepath);
             JSONObject jsonO = (JSONObject) jsonP.parse(file);
@@ -64,9 +66,9 @@ public class FormSubmitter {
         }
         return null;
     }
-    private LeaveApplication getLeaveApplication() {
+    public LeaveApplication getLeaveApplication() {
         JSONParser jsonP = new JSONParser();
-        String filepath = "forms/leave_application.json";
+        String filepath = "pms-demo/forms/leave_application.json";
         try{
             FileReader file = new FileReader(filepath);
             JSONObject jsonO = (JSONObject) jsonP.parse(file);

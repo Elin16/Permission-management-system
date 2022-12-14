@@ -37,4 +37,8 @@ public class DBService {
                 "values ('%s', '%s', '%s', '%s')", id, IOTime, IOType, campusName);
         return (dbRepo.insert(sql) > 0);
     }
+
+    public int insert(String sql) throws Exception {
+        return (dbRepo.insert(sql));
+    }
 }
