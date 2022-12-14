@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="opencsv-5.7.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/pms-demo/lib/opencsv-5.7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
