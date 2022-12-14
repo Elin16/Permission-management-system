@@ -9,16 +9,18 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
-public class StudentRepo {
+public class DBRepo {
     static Properties prop;
     static DataSource dataSource;
     static Connection conn;
-    public StudentRepo() throws Exception {
+    public DBRepo() throws Exception {
         prepareAndConnect();
         System.out.println("Connection established. The connection is" + conn);
     }
+
     public String findStudentPassByID(String id) throws Exception {
         Statement stmt = conn.createStatement();
+
         ResultSet rs = stmt.executeQuery("select userpass from student where ID=" + id);
         rs.next();
         String userpass = rs.getString(1);
@@ -47,6 +49,12 @@ public class StudentRepo {
         rs.next();
         String userpass = rs.getString(1);
         return userpass;
+    }
+
+    public int insert(String sql) throws Exception{
+        Statement stmt = conn.createStatement();
+        System.out.println(sql);
+        return stmt.executeUpdate(sql);
     }
 
     private static void prepareAndConnect() throws Exception {
