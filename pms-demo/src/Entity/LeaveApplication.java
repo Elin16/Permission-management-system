@@ -1,6 +1,6 @@
 package Entity;
 
-public class LeaveApplication {
+public class LeaveApplication extends Form{
     static private String studentId;
     static private String expectLeaveTime;
     static private String expectEntryTime;
@@ -9,6 +9,7 @@ public class LeaveApplication {
     static private String applyTime;
     public LeaveApplication(String studentId, String expectLeaveTime,
                             String expectEntryTime, String reason, String applyTime){
+        this.title = "Leave Application";
         this.studentId = studentId;
         this.expectLeaveTime = expectLeaveTime;
         this.expectEntryTime = expectEntryTime;

@@ -1,5 +1,6 @@
 package Controller;
 
+import Entity.Form;
 import Entity.EntryApplication;
 import Entity.HealthReport;
 import Entity.LeaveApplication;
@@ -80,11 +81,44 @@ public class CommandDealer {
                 break;
         }
     }
-
+    private void dealForm(Form f){
+        if(! f.checkValidation()){
+            System.out.println("Format error!");
+            return;
+        }
+        try{
+            int influencedRows;
+            influencedRows = dbs.insert(f.generateInsertion());
+            if( influencedRows > 0) {
+                System.out.println(influencedRows + " "+f.getFormTitle()+" submitted.");
+            }else{
+                System.out.println("You already submitted!");
+            } 
+        }catch(Exception e){
+            System.out.println("System failed! Please try again!");
+        }
+    }
+    private void dealIO(String ioType, String command){
+        String IOTime = cp.getParameter(command, "-t");
+        String campusName = cp.getParameter(command, "-c");
+        try{
+            dbs.insertIOLog(currentID, IOTime, ioType, campusName);
+        }catch(Exception e){
+            System.out.println("System failed! Please try again!");
+        }
+    }
+    private boolean isStudent(){
+        return utype == usertype.STUDENT;
+    }
+    private boolean studentOnly(){
+        if (!isStudent()){
+            System.out.println("You should log in as student!");
+            return false;
+        }
+        return true;
+    }
     public void executeCommand(String command) throws Exception {
         String[] splitCommand = command.split(" ");
-        String IOTime = "";
-        String campusName = "";
         switch(splitCommand[0]){
             case "login" :
                 if(utype == usertype.LOGOUT){
@@ -93,77 +127,36 @@ public class CommandDealer {
                     System.out.println("You have already log in!");
                 }
                 break;
-            case "i":
-                if(utype != usertype.STUDENT){
-                    System.out.println("You should log in as student!");
-                    break;
+            case "i": // go in school
+                if(studentOnly()){
+                    dealIO("in", command);   
                 }
-                IOTime = cp.getParameter(command, "-t");
-                campusName = cp.getParameter(command, "-c");
-                dbs.insertIOLog(currentID, IOTime, "in", campusName);
                 break;
-            case "o":
-                if(utype != usertype.STUDENT){
-                    System.out.println("You should log in as student!");
-                    break;
+            case "o": // go out of school
+                if(studentOnly()){
+                    dealIO("out", command);   
                 }
-                IOTime = cp.getParameter(command, "-t");
-                campusName = cp.getParameter(command, "-c");
-                dbs.insertIOLog(currentID, IOTime, "out", campusName);
                 break;
             case "logout" :
                 utype = usertype.LOGOUT;
                 currentID = "";
                 break;
-            case "r":
-                if(utype != usertype.STUDENT){
-                    System.out.println("You should log in as student!");
-                    break;
-                }
-                HealthReport hr = fs.getHealthReport();
-                if(hr.checkValidation()){
-                    int influencedRows = dbs.insert(hr.generateInsertion());
-                    if( influencedRows > 0) {
-                        System.out.println(influencedRows + " Health Report submitted.");
-                    } else {
-                        System.out.println("System failed! Please try again!");
-                    }
-                } else {
-                    System.out.println("Format error!");
+            case "r": // report daily health
+                if(studentOnly()){
+                    HealthReport hr = fs.getHealthReport();
+                    dealForm(hr); 
                 }
                 break;
-            case "e":
-                if(utype != usertype.STUDENT){
-                    System.out.println("You should log in as student!");
-                    break;
-                }
-                EntryApplication ea = fs.getEntryApplication();
-                if(ea.checkValidation()){
-                    int influencedRows = dbs.insert(ea.generateInsertion());
-                    if( influencedRows > 0) {
-                        System.out.println(influencedRows + " Entry Application submitted.");
-                    } else {
-                        System.out.println("System failed! Please try again!");
-                    }
-                } else {
-                    System.out.println("Format error!");
+            case "e": // apply for entry access
+                if(studentOnly()){
+                    EntryApplication ea = fs.getEntryApplication();
+                    dealForm(ea);
                 }
                 break;
-            case "l":
-                if(utype != usertype.STUDENT){
-                    System.out.println("You should log in as student!");
-                    break;
-                }
-                LeaveApplication la = fs.getLeaveApplication();
-                if(la.checkValidation()){
-                    int influencedRows = dbs.insert(la.generateInsertion());
-                    if( influencedRows > 0) {
-                        System.out.println(influencedRows + " Leave Application submitted.");
-                    } else {
-                        System.out.println("System failed! Please try again!");
-                    }
-                } else {
-                    System.out.println("Format error!");
+            case "l": // apply for leave access
+                if(studentOnly()){
+                    LeaveApplication la = fs.getLeaveApplication();
+                    dealForm(la);
                 }
                 break;
             default:

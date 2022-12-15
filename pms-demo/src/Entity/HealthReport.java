@@ -1,12 +1,13 @@
 package Entity;
 
-public class HealthReport {
+public class HealthReport extends Form{
     static String studentId;
     static String temperature;
     static String location;
     static String comment;
     static String date;
     public HealthReport(String studentId, String date, String temperature, String location, String comment){
+        this.title = "Health Report";
         this.studentId = studentId;
         this.date = date;
         this.temperature = temperature;
