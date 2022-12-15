@@ -19,7 +19,7 @@ public class EntryApplication extends Form{
     }
     public String generateInsertion(){
         String sql = String.format("INSERT INTO " +
-                "healthLog(studentID, travelHistoryList, expectEntryTime, reason, progress, applyTime)" +
+                "entryApplication(studentID, travelHistoryList, expectEntryTime, reason, progress, applyTime)" +
                 "values('%s', '%s', '%s', '%s', '%s', '%s')", studentId, travelHistoryList, expectEntryTime, reason, progress, applyTime);
         return sql;
     }

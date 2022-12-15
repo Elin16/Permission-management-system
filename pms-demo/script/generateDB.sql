@@ -67,7 +67,8 @@ CREATE TABLE student
 CREATE TABLE healthLog
     (
         studentID  numeric(11,0),
-        reportDate timestamp,
+        reportDate date,
+        reportTime time,
         bodyTemperature numeric(2,1) not null, 
         onLocation varchar(200) not null,
         comments varchar(500),
@@ -77,10 +78,11 @@ CREATE TABLE healthLog
 
 CREATE TABLE leaveApplication
     (
-        ID numeric(30,0),
+        ID int(30) AUTO_INCREMENT,
         studentID  numeric(11,0),
-        exceptLeaveTime timestamp not null,
-        exceptReturnTime timestamp not null,
+        applyTime timestamp not null,
+        expeptLeaveTime timestamp not null,
+        expeptReturnTime timestamp not null,
         reason varchar(500) not null,
         destination varchar(200) not null,
         progress varchar(30) check (progress in ('submitted','tutor approved','fail','success')) default 'submitted',
@@ -91,10 +93,11 @@ CREATE TABLE leaveApplication
 
 CREATE TABLE entryApplication
     (
-        ID numeric(30,0),
+        ID int(30) AUTO_INCREMENT,
         studentID  numeric(11,0) default null,
+        applyTime timestamp not null,
         travelHistoryList varchar(500) not null, 
-        exceptEntryTime timestamp not null,
+        expectEntryTime timestamp not null,
         reason varchar(500) not null,
         progress varchar(30) check (progress in ('submitted','tutor approved','fail','success')),
         refuseReson varchar(500),

@@ -75,8 +75,9 @@ public class FormSubmitter {
             LeaveApplication app = new LeaveApplication(
                     studentId,
                     jsonO.get("Except Leave Time").toString(),
-                    jsonO.get("Except Entry Time").toString(),
+                    jsonO.get("Except Return Time").toString(),
                     jsonO.get("Reason").toString(),
+                    jsonO.get("Destination").toString(),
                     jsonO.get("Submit Date").toString());
             return app;
         }catch(FileNotFoundException e) {
