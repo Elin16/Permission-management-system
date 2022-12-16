@@ -92,7 +92,7 @@ public class CommandDealer {
             if( influencedRows > 0) {
                 System.out.println(influencedRows + " "+f.getFormTitle()+" submitted.");
             }else{
-                System.out.println("You already submitted!");
+                System.out.println("Please check your form again!");
             } 
         }catch(Exception e){
             System.out.println("System failed! Please try again!");
