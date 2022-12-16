@@ -104,7 +104,12 @@ from student
 where inschool=0;
 
 # 2.5
+select max(IOTime)
+from IOLog
+where studentID in (select distinct  ID from leaveApplication where inschool = 0)
+group by studentID
 
+select
 
 
 # 2.6
