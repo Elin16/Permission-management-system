@@ -19,8 +19,8 @@ public class LeaveApplication extends Form{
     }
     public String generateInsertion(){
         String sql = String.format("INSERT INTO " +
-                "healthLog(studentID, expectLeaveTime, expectEntryTime, reason, progress, applyTime)" +
-                "values('%s', '%s', '%s', '%s', '%s', '%s')", studentId, expectLeaveTime, expectEntryTime, reason, progress, applyTime);
+                "leaveApplication(studentID, expectLeaveTime, expectEntryTime, reason, progress, applyTime, state)" +
+                "values('%s', '%s', '%s', '%s', '%s', '%s', 'submitted')", studentId, expectLeaveTime, expectEntryTime, reason, progress, applyTime);
         return sql;
     }
     public boolean checkValidation(){
