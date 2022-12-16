@@ -80,8 +80,7 @@ from student;
 # department
 select studentId
 from student
-where (select classID from student where ID=studentId)
-          in (select ID from class where dptID='1' );
+where classID in (select ID from class where dptID='1' );
 # class
 select studentId
 from student
@@ -104,21 +103,87 @@ from student
 where inschool=0;
 
 # 2.5
-select max(IOTime)
-from IOLog
-where studentID in (select distinct  ID from leaveApplication where inschool = 0)
-group by studentID
-
-select
+select *
+from student
+where ID in(
+    select studentID
+    from (
+             select studentID, max(IOTime) as lastOut
+             from IOLog
+             where IOType='out'
+             group by studentID
+         ) as c
+    where timediff(current_timestamp, lastOut) > '24:00:00'
+    )
+and ID in (
+    (select distinct ID
+     from student
+     where entryPerm > 0 and ID not in
+        (
+        select ID
+        from leaveApplication
+        where progress='submitted' or progress='approved' or progress='success'
+        )
+    )
+)
 
 
 # 2.6
-
+select *
+from student
+where ID in(
+    (
+        select studentID
+        from leaveApplication
+        where progress='submitted' or progress='approved' or progress='success'
+    )
+) and inschool=1
 
 
 # 2.7
+# university
+select ID
+from student
+where ID in (
+    select studentID
+    from (
+             select studentID, max(IOTime) as lastIn
+             from IOLog
+             where IOType='in'
+             group by studentID
+         ) as c
+    where datediff(current_date, DATE(lastIn) ) > 1
+) and inschool=1
 
-
+# department
+select ID
+from student
+where ID in (
+    select studentID
+    from (
+             select studentID, max(IOTime) as lastIn
+             from IOLog
+             where IOType='in'
+             group by studentID
+         ) as c
+    where datediff(current_date, DATE(lastIn) ) > 1
+) and inschool=1
+and classID
+in (select ID from class where dptID='1' )
+# class
+select ID
+from student
+where ID in (
+    select studentID
+    from (
+             select studentID, max(IOTime) as lastIn
+             from IOLog
+             where IOType='in'
+             group by studentID
+         ) as c
+    where datediff(current_date, DATE(lastIn) ) > 1
+) and inschool=1
+  and classID='1'
 
 # 2.8
 
