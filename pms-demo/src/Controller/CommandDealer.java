@@ -1,32 +1,25 @@
 package Controller;
 
-import Entity.Form;
-import Entity.EntryApplication;
-import Entity.HealthReport;
-import Entity.LeaveApplication;
+import Entity.*;
 import Service.DBService;
 import Service.FormSubmitter;
 
+import java.util.List;
 import java.util.Scanner;
-
-enum usertype {
-    ADMIN, TUTOR, STUDENT, SUPER_USER, LOGOUT
-}
 
 public class CommandDealer {
     private CommandParser cp;
     private usertype utype;
     private DBService dbs;
-
     private String currentID;
-
     private FormSubmitter fs;
-
+    private List<Query> queryList;
     public CommandDealer() throws Exception {
         this.cp = new CommandParser();
         this.utype = usertype.LOGOUT;
         this.dbs = new DBService();
         this.currentID = "";
+        queryList.add(new EntryAppQuery());
     }
 
     private void login(String command) throws Exception {
@@ -98,6 +91,13 @@ public class CommandDealer {
             System.out.println("System failed! Please try again!");
         }
     }
+    private void showQueryResult(String sql){
+        try{
+            dbs.insert(sql);
+        }catch(Exception e){
+            System.out.println("System failed! Please try again!");
+        }
+    }
     private void dealIO(String ioType, String command){
         String IOTime = cp.getParameter(command, "-t");
         String campusName = cp.getParameter(command, "-c");
@@ -110,57 +110,93 @@ public class CommandDealer {
     private boolean isStudent(){
         return utype == usertype.STUDENT;
     }
-    private boolean studentOnly(){
-        if (!isStudent()){
-            System.out.println("You should log in as student!");
-            return false;
-        }
-        return true;
-    }
     public void executeCommand(String command) throws Exception {
         String[] splitCommand = command.split(" ");
+        boolean find_command = true;
         switch(splitCommand[0]){
             case "login" :
                 if(utype == usertype.LOGOUT){
                     login(command);
+                    //query user class(if exists) and department
+                    //save classID and departmentID
+                    //if class not exists, set classID=""
                 } else {
                     System.out.println("You have already log in!");
-                }
-                break;
-            case "i": // go in school
-                if(studentOnly()){
-                    dealIO("in", command);   
-                }
-                break;
-            case "o": // go out of school
-                if(studentOnly()){
-                    dealIO("out", command);   
                 }
                 break;
             case "logout" :
                 utype = usertype.LOGOUT;
                 currentID = "";
                 break;
-            case "r": // report daily health
-                if(studentOnly()){
-                    HealthReport hr = fs.getHealthReport();
-                    dealForm(hr); 
-                }
-                break;
-            case "e": // apply for entry access
-                if(studentOnly()){
-                    EntryApplication ea = fs.getEntryApplication();
-                    dealForm(ea);
-                }
-                break;
-            case "l": // apply for leave access
-                if(studentOnly()){
-                    LeaveApplication la = fs.getLeaveApplication();
-                    dealForm(la);
-                }
-                break;
             default:
+                find_command = false;
                 break;
         }
+        if(find_command||checkQueryCommand(command)||checkIOCommand(command)||checkFormCommand(command))
+            return;
+        System.out.println("Command not exist!");
+    }
+
+    private boolean checkIOCommand(String command){
+        String[] splitCommand = command.split(" ");
+        if(!isStudent()){
+            return false;
+        }
+        switch(splitCommand[0]) {
+            case "i": // go in school
+                dealIO("in", command);
+                break;
+            case "o": // go out of school
+                dealIO("out", command);
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    private boolean checkFormCommand(String command){
+        String[] splitCommand = command.split(" ");
+        if(!isStudent()){
+            return false;
+        }
+        Form f;
+        switch(splitCommand[0]){
+            case "r": // report daily health
+                f = fs.getHealthReport();
+                break;
+            case "e": // apply for entry access
+                f = fs.getEntryApplication();
+                break;
+            case "l": // apply for leave access
+                f = fs.getLeaveApplication();
+                break;
+            default:
+                return false;
+        }
+        dealForm(f);
+        return true;
+    }
+
+    private boolean checkQueryCommand(String command) {
+        CmdMatchRes r;
+        for(Query q: queryList){
+            r = q.match(command);
+            switch (r){
+                case UN_CORRECT_FORM:
+                    System.out.println("Command Form error!");
+                    return true;
+                case MATCH:
+                    if(!q.hasPerm(utype)){
+                        System.out.println("You are not authority to access this!");
+                    }else{
+                        showQueryResult(q.generateSQL());
+                    }
+                    return true;
+                default:
+                    break;
+            }
+        }
+       return false;
     }
 }
