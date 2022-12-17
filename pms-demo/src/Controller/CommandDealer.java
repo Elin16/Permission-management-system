@@ -10,6 +10,9 @@ import java.util.Scanner;
 public class CommandDealer {
     private CommandParser cp;
     private usertype utype;
+
+    private int uDepartment;
+    private int uClass;
     private DBService dbs;
     private String currentID;
     private FormSubmitter fs;
@@ -35,6 +38,8 @@ public class CommandDealer {
                 if(dbs.checkStudentLogin(id,password)){
                     utype = usertype.STUDENT;
                     currentID = id;
+                    uClass = dbs.getStudentClass(id);
+                    uDepartment = dbs.getStudentDepartment(id);
                     fs = new FormSubmitter(currentID);
                     System.out.println("Log in success! Your ID is " + id);
                 }
@@ -46,6 +51,8 @@ public class CommandDealer {
                 if(dbs.checkTutorLogin(id,password)) {
                     utype = usertype.TUTOR;
                     currentID = id;
+                    uClass = dbs.getTutorClass(id);
+                    uDepartment = dbs.getTutorDepartment(id);
                     System.out.println("Log in success! Your ID is " + id);
                 }
                 break;
@@ -56,6 +63,7 @@ public class CommandDealer {
                 if(dbs.checkAdminLogin(id,password)) {
                     utype = usertype.ADMIN;
                     currentID = id;
+                    uDepartment = dbs.getAdminDepartment(id);
                     System.out.println("Log in success! Your ID is " + id);
                 }
                 break;
@@ -93,7 +101,7 @@ public class CommandDealer {
     }
     private void showQueryResult(String sql){
         try{
-            dbs.insert(sql);
+            dbs.printResultSet(dbs.query(sql));
         }catch(Exception e){
             System.out.println("System failed! Please try again!");
         }

@@ -2,6 +2,11 @@ package Service;
 
 import Repo.DBRepo;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class DBService {
@@ -40,5 +45,101 @@ public class DBService {
 
     public int insert(String sql) throws Exception {
         return (dbRepo.insert(sql));
+    }
+
+    public ResultSet query(String sql) throws Exception {
+        return (dbRepo.query(sql));
+    }
+
+
+    public void printResultSet(ResultSet rs) throws SQLException {
+        ResultSetMetaData resultSetMetaData = rs.getMetaData();
+        int ColumnCount = resultSetMetaData.getColumnCount();
+        int[] columnMaxLengths = new int[ColumnCount];
+        ArrayList<String[]> results = new ArrayList<>();
+        while (rs.next()) {
+            String[] columnStr = new String[ColumnCount];
+            for (int i = 0; i < ColumnCount; i++) {
+                columnStr[i] = rs.getString(i + 1);
+                columnMaxLengths[i] = Math.max(columnMaxLengths[i], (columnStr[i] == null) ? 0 : columnStr[i].length());
+            }
+            results.add(columnStr);
+        }
+        printSeparator(columnMaxLengths);
+        printColumnName(resultSetMetaData, columnMaxLengths);
+        printSeparator(columnMaxLengths);
+        Iterator<String[]> iterator = results.iterator();
+        String[] columnStr;
+        while (iterator.hasNext()) {
+            columnStr = iterator.next();
+            for (int i = 0; i < ColumnCount; i++) {
+                // System.out.printf("|%" + (columnMaxLengths[i] + 1) + "s", columnStr[i]);
+                System.out.printf("|%" + columnMaxLengths[i] + "s", columnStr[i]);
+            }
+            System.out.println("|");
+        }
+        printSeparator(columnMaxLengths);
+    }
+
+    private void printColumnName(ResultSetMetaData resultSetMetaData, int[] columnMaxLengths) throws SQLException {
+        int columnCount = resultSetMetaData.getColumnCount();
+        for (int i = 0; i < columnCount; i++) {
+            // System.out.printf("|%" + (columnMaxLengths[i] + 1) + "s", resultSetMetaData.getColumnName(i + 1));
+            System.out.printf("|%" + columnMaxLengths[i] + "s", resultSetMetaData.getColumnName(i + 1));
+        }
+        System.out.println("|");
+    }
+
+    private void printSeparator(int[] columnMaxLengths) {
+        for (int i = 0; i < columnMaxLengths.length; i++) {
+            System.out.print("+");
+            // for (int j = 0; j < columnMaxLengths[i] + 1; j++) {
+            for (int j = 0; j < columnMaxLengths[i]; j++) {
+                System.out.print("-");
+            }
+        }
+        System.out.println("+");
+    }
+
+    public int getStudentClass(String id) throws Exception {
+        ResultSet rs = dbRepo.query("select classID from student where ID=" + id);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public int getStudentDepartment(String id) throws Exception {
+        ResultSet rs = dbRepo.query("select dptID " +
+                "from class " +
+                "where ID in " +
+                "(select classID " +
+                "from student " +
+                "where ID=)" + id);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public int getTutorClass(String id) throws Exception {
+        ResultSet rs = dbRepo.query("select classID from tutor where ID=" + id);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public int getTutorDepartment(String id) throws Exception {
+        ResultSet rs = dbRepo.query("select dptID " +
+                "from class " +
+                "where ID in " +
+                "(select classID " +
+                "from tutor " +
+                "where ID=)" + id);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public int getAdminDepartment(String id) throws Exception {
+        ResultSet rs = dbRepo.query("select dptID " +
+                "from admin " +
+                "where ID=)" + id);
+        rs.next();
+        return rs.getInt(1);
     }
 }

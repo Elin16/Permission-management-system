@@ -6,7 +6,9 @@ import javax.sql.DataSource;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Properties;
 
 public class DBRepo {
@@ -68,5 +70,10 @@ public class DBRepo {
         prop.load(new FileReader("pms-demo/src/druid.properties"));
         dataSource = DruidDataSourceFactory.createDataSource(prop);
         conn = dataSource.getConnection();
+    }
+
+    public ResultSet query(String sql) throws Exception {
+        Statement stmt = conn.createStatement();
+        return stmt.executeQuery(sql);
     }
 }
