@@ -41,7 +41,7 @@ public class Query {
         return true;
     }
     //Generate corresponding sql to the command
-    public String generateSQL(String uId, String deptId, String classId){
+    public String generateSQL(String uId, String classId,String dptId){
         return "";
     }
 }

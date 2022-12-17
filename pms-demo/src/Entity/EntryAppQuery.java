@@ -39,29 +39,88 @@ public class EntryAppQuery extends Query{
         return true;
     }
     private String sqlHeader(){
-        return isStatistics?"SELECT count(*)":"SELECT * ";
-    }
-    private String sqlBody(){
-        return "FROM entryApplication" +
-                "WHERE progress='submitted'" +
-                "AND datediff(curdate(), date(applyTime)) < " + days ;
-    }
-    private String sqlTailor(String classId, String deptId){
+        if(! isStatistics){
+            return "SELECT *";
+        }
         switch (userType){
             case ADMIN:
+                //s:query dpt, group by class
+                //d:query dpt
+                //return "SELECT studentBelonging.classID, count(*)";
             case TUTOR:
-                break;
+                //s: query dpt, group by class
+                //d: query class
+                //return "SELECT studentBelonging.classID, count(*)";
             case STUDENT:
-                break;
+                //s: query class,group by class
+                return "SELECT studentBelonging.classID, count(*)";
             case SUPER_USER:
-
-                break;
-            default:break;
+                //query universal
+                //group by dpt
+                return "SELECT studentBelonging.dptID, count(*)";
+            default:
+                return "";
         }
-        return "";
+    }
+    //Major Query
+    private String sqlBody(String ID, String classId, String dptId){
+        String s1 =  "FROM entryApplication, studentBelonging" +
+        "WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < " + days +
+        "AND entryApplication.studentID=studentBelonging.ID";
+        String s2 = null;
+        switch (userType){
+            case ADMIN:
+                //s:query dpt, group by class
+                //d:query dpt
+                s2 = "AND studentBelonging.dptID=" + dptId;
+            case TUTOR:
+                //s: query dpt, group by class
+                //d: query class
+                if(isStatistics)
+                    s2 = "AND studentBelonging.dptID=" + dptId;
+                else
+                    s2 = "AND studentBelonging.classID=" + dptId;
+            case STUDENT:
+                //s: query class,group by class
+                //d: query self
+                if(isStatistics)
+                    s2 = "AND studentBelonging.classID=" + dptId;
+                else
+                    s2 = "AND studentBelonging.studentID=" + ID;
+            case SUPER_USER:
+                //query universal
+                //group by dpt
+                s2 = "";
+            default:
+                break;
+        }
+        return s1 + s2;
+    }
+    //Add Group By
+    private String sqlTailor(){
+        // is Statistics:is Detail
+        switch (userType){
+            case ADMIN:
+                //s:query dpt, group by class
+                //d:query dpt
+                //return isStatistics?"GROUP BY studentBelonging.classID":"";
+            case TUTOR:
+                //s: query dpt, group by class
+                //d: query class
+                //return isStatistics?"GROUP BY studentBelonging.classID":"";
+            case STUDENT:
+                //s: query class,group by class
+                return isStatistics?"GROUP BY studentBelonging.classID":"";
+            case SUPER_USER:
+                //query universal
+                //group by dpt
+                return isStatistics?"GROUP BY studentBelonging.dptID":"";
+            default:
+                return "";
+        }
     }
     @Override
-    public String generateSQL(String uId, String deptId, String classId){
-        return sqlHeader() + sqlBody() + sqlTailor(classId, deptId);
+    public String generateSQL(String uId, String classId, String dptId){
+        return sqlHeader() + sqlBody( uId, classId, dptId) + sqlTailor();
     }
 }

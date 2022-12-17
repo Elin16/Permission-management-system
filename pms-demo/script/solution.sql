@@ -43,7 +43,48 @@ order by IOTime;
 /*过去 n 天尚未批准的入校申请和出校申请数量及详细信息；*/
 SELECT * FROM entryApplication WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5;
 SELECT * FROM leaveApplication WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5;
-
+/*查询班级统计*/
+SELECT studentBelonging.classID, count(*)
+FROM entryApplication, studentBelonging
+WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
+  AND entryApplication.studentID=studentBelonging.ID
+ AND studentBelonging.classID='1'
+GROUP BY studentBelonging.classID;
+/*按照院系查找分班级的统计信息*/
+SELECT studentBelonging.classID, count(*)
+FROM entryApplication, studentBelonging
+WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
+  AND entryApplication.studentID=studentBelonging.ID
+  AND studentBelonging.dptID='1'
+GROUP BY studentBelonging.classID;
+/*全校范围查找分院系信息*/
+SELECT studentBelonging.dptID, count(*)
+FROM entryApplication, studentBelonging
+WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
+AND entryApplication.studentID=studentBelonging.ID
+GROUP BY studentBelonging.dptID;
+/*查询个人详情*/
+SELECT *
+FROM entryApplication
+WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
+  AND entryApplication.studentID=ID;
+/*查询班级详情*/
+SELECT *
+FROM entryApplication, studentBelonging
+WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
+  AND entryApplication.studentID=studentBelonging.ID
+  AND studentBelonging.classID='1';
+/*按照院系查找详请*/
+SELECT *
+FROM entryApplication, studentBelonging
+WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
+  AND entryApplication.studentID=studentBelonging.ID;
+  AND studentBelonging.dptID='1';
+/*全校范围查找详情*/
+SELECT *
+FROM entryApplication, studentBelonging
+WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
+  AND entryApplication.studentID=studentBelonging.ID;
 # 2.2
 /*前 n 个提交入校申请最多的学生，支持按多级范围（全校、院系、班级）进行筛选；*/
 # university
