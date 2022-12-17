@@ -113,7 +113,7 @@ public class DBService {
                 "where ID in " +
                 "(select classID " +
                 "from student " +
-                "where ID=)" + id);
+                "where ID=" + id + ")");
         rs.next();
         return rs.getString(1);
     }
@@ -147,13 +147,13 @@ public class DBService {
         String sql = "CREATE VIEW studentBelonging as " +
                 "SELECT student.ID, student.classID, class.dptID " +
                 "FROM student, class, department " +
-                "WHERE student.classID=class.ID" +
+                "WHERE student.classID=class.ID " +
                   "and class.dptID=department.ID";
         dbRepo.execute(sql);
     }
 
     public void dropStudentBelongingView() throws Exception {
-        String sql = "DROP VIEW 'studentBelonging '";
+        String sql = "DROP VIEW studentBelonging";
         dbRepo.execute(sql);
     }
 }

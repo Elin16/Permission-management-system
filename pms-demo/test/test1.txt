@@ -1,2 +1,5 @@
 login -t "s" -u "19307090001"
 12345
+show-entry-app -d "5" -u
+show-entry-app -d "5"
+

@@ -4,6 +4,7 @@ import Entity.*;
 import Service.DBService;
 import Service.FormSubmitter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,8 +22,10 @@ public class CommandDealer {
         this.utype = usertype.LOGOUT;
         this.dbs = new DBService();
         this.currentID = "";
-        queryList.add(new EntryAppQuery());
-        dbs.createStudentBelongingView();
+        this.queryList = new ArrayList<>();
+        this.queryList.add(new EntryAppQuery());
+        this.dbs.dropStudentBelongingView();
+        this.dbs.createStudentBelongingView();
     }
 
     private void login(String command) throws Exception {
@@ -103,7 +106,7 @@ public class CommandDealer {
         try{
             dbs.printResultSet(dbs.query(sql));
         }catch(Exception e){
-            System.out.println("System failed! Please try again!");
+            System.out.println("Print: System failed! Please try again!");
         }
     }
     private void dealIO(String ioType, String command){
@@ -198,9 +201,9 @@ public class CommandDealer {
                     if(!q.hasPerm(utype)){
                         System.out.println("You are not authority to access this!");
                     }else{
-                        //showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
-                        String test = q.generateSQL(currentID, uClass, uDepartment);
-                        System.out.println(test);
+                        showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
+                        // String test = q.generateSQL(currentID, uClass, uDepartment);
+                        // System.out.println(test);
                     }
                     return true;
                 default:

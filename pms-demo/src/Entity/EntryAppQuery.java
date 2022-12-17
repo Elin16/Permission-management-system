@@ -1,11 +1,9 @@
 package Entity;
 
 import Controller.CmdMatchRes;
-import Controller.usertype;
+import Controller.CommandParser;
 
 import java.util.regex.Pattern;
-
-import static Controller.usertype.*;
 
 // 过去 n 天尚未批准的入校申请数量及详细信息；
 //$ show-entry-app -s <wait> -d <n days> -t <s(statics)/d(detail)>
@@ -15,6 +13,7 @@ public class EntryAppQuery extends Query{
         MY_CMD = "show-entry-app";
         days = 0;
         isStatistics = false;
+        cp = new CommandParser();
     }
     @Override
     public CmdMatchRes match(String command) {
@@ -40,7 +39,7 @@ public class EntryAppQuery extends Query{
     }
     private String sqlHeader(){
         if(! isStatistics){
-            return "SELECT *";
+            return "SELECT * ";
         }
         switch (userType){
             case ADMIN:
@@ -53,51 +52,55 @@ public class EntryAppQuery extends Query{
                 //return "SELECT studentBelonging.classID, count(*)";
             case STUDENT:
                 //s: query class,group by class
-                return "SELECT studentBelonging.classID, count(*)";
+                return "SELECT studentBelonging.classID, count(*) ";
             case SUPER_USER:
                 //query universal
                 //group by dpt
-                return "SELECT studentBelonging.dptID, count(*)";
+                return "SELECT studentBelonging.dptID, count(*) ";
             default:
                 return "";
         }
     }
     //Major Query
     private String sqlBody(String ID, String classId, String dptId){
-        String s1 =  "FROM entryApplication, studentBelonging" +
+        String s1 =  "FROM entryApplication, studentBelonging " +
         "WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < " + days +
-        "AND entryApplication.studentID=studentBelonging.ID";
+        " AND entryApplication.studentID=studentBelonging.ID ";
         String s2 = null;
         switch (userType){
             case ADMIN:
                 //s:query dpt, group by class
                 //d:query dpt
-                s2 = "AND studentBelonging.dptID=" + dptId;
+                s2 = " AND studentBelonging.dptID=" + dptId;
+                break;
             case TUTOR:
                 //s: query dpt, group by class
                 //d: query class
                 if(isStatistics)
-                    s2 = "AND studentBelonging.dptID=" + dptId;
+                    s2 = " AND studentBelonging.dptID=" + dptId;
                 else
-                    s2 = "AND studentBelonging.classID=" + dptId;
+                    s2 = " AND studentBelonging.classID=" + classId;
+                break;
             case STUDENT:
                 //s: query class,group by class
                 //d: query self
                 if(isStatistics)
-                    s2 = "AND studentBelonging.classID=" + dptId;
+                    s2 = " AND studentBelonging.classID=" + classId;
                 else
-                    s2 = "AND studentBelonging.studentID=" + ID;
+                    s2 = " AND studentBelonging.ID=" + ID;
+                break;
             case SUPER_USER:
                 //query universal
                 //group by dpt
                 s2 = "";
+                break;
             default:
                 break;
         }
         return s1 + s2;
     }
     //Add Group By
-    private String sqlTailor(){
+    private String sqlTail(){
         // is Statistics:is Detail
         switch (userType){
             case ADMIN:
@@ -110,17 +113,17 @@ public class EntryAppQuery extends Query{
                 //return isStatistics?"GROUP BY studentBelonging.classID":"";
             case STUDENT:
                 //s: query class,group by class
-                return isStatistics?"GROUP BY studentBelonging.classID":"";
+                return isStatistics?" GROUP BY studentBelonging.classID":"";
             case SUPER_USER:
                 //query universal
                 //group by dpt
-                return isStatistics?"GROUP BY studentBelonging.dptID":"";
+                return isStatistics?" GROUP BY studentBelonging.dptID":"";
             default:
                 return "";
         }
     }
     @Override
     public String generateSQL(String uId, String classId, String dptId){
-        return sqlHeader() + sqlBody( uId, classId, dptId) + sqlTailor();
+        return sqlHeader() + sqlBody( uId, classId, dptId) + sqlTail();
     }
 }
