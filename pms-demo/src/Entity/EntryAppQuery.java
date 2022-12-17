@@ -5,6 +5,8 @@ import Controller.usertype;
 
 import java.util.regex.Pattern;
 
+import static Controller.usertype.*;
+
 // 过去 n 天尚未批准的入校申请数量及详细信息；
 //$ show-entry-app -s <wait> -d <n days> -t <s(statics)/d(detail)>
 public class EntryAppQuery extends Query{
@@ -12,7 +14,7 @@ public class EntryAppQuery extends Query{
     public EntryAppQuery(){
         MY_CMD = "show-entry-app";
         days = 0;
-        upperLayerStatistics = false;
+        isStatistics = false;
     }
     @Override
     public CmdMatchRes match(String command) {
@@ -33,15 +35,33 @@ public class EntryAppQuery extends Query{
             return false;
         days = Integer.valueOf(parameter).intValue();
         // get -u(if exists)
-        upperLayerStatistics = cp.optionExist(currentCMD,"-u");
+        isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
     }
-    @Override
-    public String generateSQL(String deptId, String classId){
-        if(upperLayerStatistics){
-            return "count group by";
-        }else{
-            return "select";
+    private String sqlHeader(){
+        return isStatistics?"SELECT count(*)":"SELECT * ";
+    }
+    private String sqlBody(){
+        return "FROM entryApplication" +
+                "WHERE progress='submitted'" +
+                "AND datediff(curdate(), date(applyTime)) < " + days ;
+    }
+    private String sqlTailor(String classId, String deptId){
+        switch (userType){
+            case ADMIN:
+            case TUTOR:
+                break;
+            case STUDENT:
+                break;
+            case SUPER_USER:
+
+                break;
+            default:break;
         }
+        return "";
+    }
+    @Override
+    public String generateSQL(String uId, String deptId, String classId){
+        return sqlHeader() + sqlBody() + sqlTailor(classId, deptId);
     }
 }

@@ -10,9 +10,8 @@ import java.util.Scanner;
 public class CommandDealer {
     private CommandParser cp;
     private usertype utype;
-
-    private int uDepartment;
-    private int uClass;
+    private String uDepartment;
+    private String uClass;
     private DBService dbs;
     private String currentID;
     private FormSubmitter fs;
@@ -23,6 +22,7 @@ public class CommandDealer {
         this.dbs = new DBService();
         this.currentID = "";
         queryList.add(new EntryAppQuery());
+        dbs.createStudentBelongingView();
     }
 
     private void login(String command) throws Exception {
@@ -124,10 +124,10 @@ public class CommandDealer {
         switch(splitCommand[0]){
             case "login" :
                 if(utype == usertype.LOGOUT){
-                    login(command);
                     //query user class(if exists) and department
                     //save classID and departmentID
                     //if class not exists, set classID=""
+                    login(command);
                 } else {
                     System.out.println("You have already log in!");
                 }
@@ -198,7 +198,7 @@ public class CommandDealer {
                     if(!q.hasPerm(utype)){
                         System.out.println("You are not authority to access this!");
                     }else{
-                        showQueryResult(q.generateSQL());
+                        showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
                     }
                     return true;
                 default:

@@ -9,7 +9,7 @@ public class Query {
     protected String MY_CMD;
     protected String sql;
     protected String positiveNumberPattern = "[0-9]";
-    protected boolean upperLayerStatistics;
+    protected boolean isStatistics;
     protected String DETAIL = "d";
     protected String STATISTICS = "s";
     protected String currentCMD;
@@ -32,7 +32,7 @@ public class Query {
     }
     protected void getQueryType(){
         // get  -u (which means upper layer statistics), if not exist, than it means default(show own layer detail)
-        upperLayerStatistics = cp.optionExist(currentCMD,"-u");
+        isStatistics = cp.optionExist(currentCMD,"-u");
     }
     // this is used in the queries which user can set the range of query
     // etc. the top n student of xxx
@@ -41,7 +41,7 @@ public class Query {
         return true;
     }
     //Generate corresponding sql to the command
-    public String generateSQL(String deptId, String classId){
+    public String generateSQL(String uId, String deptId, String classId){
         return "";
     }
 }

@@ -101,13 +101,13 @@ public class DBService {
         System.out.println("+");
     }
 
-    public int getStudentClass(String id) throws Exception {
+    public String getStudentClass(String id) throws Exception {
         ResultSet rs = dbRepo.query("select classID from student where ID=" + id);
         rs.next();
-        return rs.getInt(1);
+        return rs.getString(1);
     }
 
-    public int getStudentDepartment(String id) throws Exception {
+    public String getStudentDepartment(String id) throws Exception {
         ResultSet rs = dbRepo.query("select dptID " +
                 "from class " +
                 "where ID in " +
@@ -115,16 +115,16 @@ public class DBService {
                 "from student " +
                 "where ID=)" + id);
         rs.next();
-        return rs.getInt(1);
+        return rs.getString(1);
     }
 
-    public int getTutorClass(String id) throws Exception {
+    public String getTutorClass(String id) throws Exception {
         ResultSet rs = dbRepo.query("select classID from tutor where ID=" + id);
         rs.next();
-        return rs.getInt(1);
+        return rs.getString(1);
     }
 
-    public int getTutorDepartment(String id) throws Exception {
+    public String getTutorDepartment(String id) throws Exception {
         ResultSet rs = dbRepo.query("select dptID " +
                 "from class " +
                 "where ID in " +
@@ -132,14 +132,25 @@ public class DBService {
                 "from tutor " +
                 "where ID=)" + id);
         rs.next();
-        return rs.getInt(1);
+        return rs.getString(1);
     }
 
-    public int getAdminDepartment(String id) throws Exception {
+    public String getAdminDepartment(String id) throws Exception {
         ResultSet rs = dbRepo.query("select dptID " +
                 "from admin " +
                 "where ID=)" + id);
         rs.next();
-        return rs.getInt(1);
+        return rs.getString(1);
+    }
+
+    public void createStudentBelongingView() {
+        String sql = "CREATE VIEW studentBelonging as\n" +
+                "SELECT student.ID, student.classID, class.dptID\n" +
+                "FROM student, class, department\n" +
+                "WHERE student.classID = class.ID";
+    }
+
+    public void dropStudentBelongingView(){
+        String sql = "DROP VIEW 'studentBelonging '";
     }
 }
