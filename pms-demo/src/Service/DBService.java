@@ -143,14 +143,17 @@ public class DBService {
         return rs.getString(1);
     }
 
-    public void createStudentBelongingView() {
-        String sql = "CREATE VIEW studentBelonging as\n" +
-                "SELECT student.ID, student.classID, class.dptID\n" +
-                "FROM student, class, department\n" +
-                "WHERE student.classID = class.ID";
+    public void createStudentBelongingView() throws Exception {
+        String sql = "CREATE VIEW studentBelonging as " +
+                "SELECT student.ID, student.classID, class.dptID " +
+                "FROM student, class, department " +
+                "WHERE student.classID=class.ID" +
+                  "and class.dptID=department.ID";
+        dbRepo.execute(sql);
     }
 
-    public void dropStudentBelongingView(){
+    public void dropStudentBelongingView() throws Exception {
         String sql = "DROP VIEW 'studentBelonging '";
+        dbRepo.execute(sql);
     }
 }
