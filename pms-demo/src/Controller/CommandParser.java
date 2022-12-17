@@ -7,4 +7,7 @@ public class CommandParser {
         int indexEnd = command.indexOf('\"', indexBegin);
         return command.substring(indexBegin, indexEnd);
     }
+    public boolean optionExist(String command, String op){
+        return (command.indexOf(op)>=0);
+    }
 }

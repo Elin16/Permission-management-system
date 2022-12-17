@@ -1,16 +1,13 @@
 package Entity;
 
 import Controller.CmdMatchRes;
-import Controller.usertype;
 
 import java.util.regex.Pattern;
 
-// 过去 n 天尚未批准的入校申请数量及详细信息；
-//$ show-entry-app -s <wait> -d <n days> -t <s(statics)/d(detail)>
-public class EntryAppQuery extends Query{
+public class LeaveAppQuery extends Query{
     private int days;
-    public EntryAppQuery(){
-        MY_CMD = "show-entry-app";
+    public LeaveAppQuery(){
+        MY_CMD = "show-leave-app";
         days = 0;
         upperLayerStatistics = false;
     }
