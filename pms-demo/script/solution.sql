@@ -129,44 +129,37 @@ where studentId
           in (select ID from student where classID = '1');
 
 
-# 2.4
-select count(distinct ID) as NumberOfOutStudent
-from student
-where inschool = 0;
+# 2.4 show-oos
+# show student out of school
+select s.*, b.dptID, max(IOTime)
+from studentBelonging as b, student as s, IOLog as io
+    where b.ID=s.ID and s.ID=io.studentID and inschool=0
+    group by b.ID;
 
-select max(IOTime)
-from IOLog
-where studentID in (select ID from student where inschool = 0)
-group by studentID
 
-select *
-from student
-where inschool=0;
 
 # 2.5
-select *
-from student
-where ID in(
-    select studentID
-    from (
-             select studentID, max(IOTime) as lastOut
-             from IOLog
-             where IOType='out'
-             group by studentID
-         ) as c
-    where timediff(current_timestamp, lastOut) > '24:00:00'
+SELECT *FROM studentBelonging
+WHERE ID IN(
+    SELECT studentID
+    FROM (
+             SELECT studentID, max(IOTime) as lastOut
+             FROM IOLog
+             WHERE IOType='out'
+             GROUP BY studentID
+         ) AS outOfSchool
+    WHERE timediff(current_timestamp, lastOut) > '24:00:00'
 )
-  and ID in (
-    (select distinct ID
-     from student
-     where entryPerm > 0 and ID not in
-                             (
-                                 select ID
-                                 from leaveApplication
-                                 where progress='submitted' or progress='approved' or progress='success'
-                             )
+  AND ID IN (
+    (SELECT ID
+     FROM student
+     WHERE entryPerm > 0 AND inschool>0 AND ID NOT IN(
+         SELECT ID
+         FROM leaveApplication
+         WHERE progress='submitted' OR progress='approved' OR progress='success'
+     )
     )
-)
+) AND studentBelonging.ID=19307090001;
 
 SELECT *
 FROM studentBelonging
@@ -189,7 +182,7 @@ AND ID IN (
          WHERE progress='submitted' OR progress='approved' OR progress='success'
         )
     )
-) AND studentBelonging.dptID=1
+) AND studentBelonging.dptID=1;
 
 # 2.6
 select *
