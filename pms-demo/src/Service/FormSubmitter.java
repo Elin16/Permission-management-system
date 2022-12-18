@@ -2,9 +2,9 @@ package Service;
 
 import java.io.*;
 
-import Entity.EntryApplicationForm;
-import Entity.HealthReportForm;
-import Entity.LeaveApplicationForm;
+import Entity.Form.EntryApplicationForm;
+import Entity.Form.HealthReportForm;
+import Entity.Form.LeaveApplicationForm;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

@@ -1,6 +1,8 @@
 package Controller;
 
-import Entity.*;
+import Entity.Form.Form;
+import Entity.Query.AppQuery;
+import Entity.Query.Query;
 import Service.DBService;
 import Service.FormSubmitter;
 
@@ -9,7 +11,7 @@ import java.util.Scanner;
 
 public class CommandDealer {
     private CommandParser cp;
-    private usertype utype;
+    private usertype userType;
     private String uDepartment;
     private String uClass;
     private DBService dbs;
@@ -18,10 +20,11 @@ public class CommandDealer {
     private List<Query> queryList;
     public CommandDealer() throws Exception {
         this.cp = new CommandParser();
-        this.utype = usertype.LOGOUT;
+        this.userType = usertype.LOGOUT;
         this.dbs = new DBService();
         this.currentID = "";
-        queryList.add(new EntryAppQuery());
+        queryList.add(new AppQuery("show-entry-app","entryApplication"));
+        queryList.add(new AppQuery("show-leave-app","leaveApplication"));
         dbs.createStudentBelongingView();
     }
 
@@ -36,7 +39,7 @@ public class CommandDealer {
                 System.out.println("Please enter your password:");
                 password = input.nextLine();
                 if(dbs.checkStudentLogin(id,password)){
-                    utype = usertype.STUDENT;
+                    userType = usertype.STUDENT;
                     currentID = id;
                     uClass = dbs.getStudentClass(id);
                     uDepartment = dbs.getStudentDepartment(id);
@@ -49,7 +52,7 @@ public class CommandDealer {
                 System.out.println("Please enter your password:");
                 password = input.nextLine();
                 if(dbs.checkTutorLogin(id,password)) {
-                    utype = usertype.TUTOR;
+                    userType = usertype.TUTOR;
                     currentID = id;
                     uClass = dbs.getTutorClass(id);
                     uDepartment = dbs.getTutorDepartment(id);
@@ -61,7 +64,7 @@ public class CommandDealer {
                 System.out.println("Please enter your password:");
                 password = input.nextLine();
                 if(dbs.checkAdminLogin(id,password)) {
-                    utype = usertype.ADMIN;
+                    userType = usertype.ADMIN;
                     currentID = id;
                     uDepartment = dbs.getAdminDepartment(id);
                     System.out.println("Log in success! Your ID is " + id);
@@ -72,7 +75,7 @@ public class CommandDealer {
                 System.out.println("Please enter your password:");
                 password = input.nextLine();
                 if(dbs.checkSuperAdminLogin(id,password)) {
-                    utype = usertype.SUPER_USER;
+                    userType = usertype.SUPER_USER;
                     currentID = id;
                     System.out.println("Log in success! Your ID is " + id);
                 }
@@ -116,14 +119,14 @@ public class CommandDealer {
         }
     }
     private boolean isStudent(){
-        return utype == usertype.STUDENT;
+        return userType == usertype.STUDENT;
     }
     public void executeCommand(String command) throws Exception {
         String[] splitCommand = command.split(" ");
         boolean find_command = true;
         switch(splitCommand[0]){
             case "login" :
-                if(utype == usertype.LOGOUT){
+                if(userType == usertype.LOGOUT){
                     //query user class(if exists) and department
                     //save classID and departmentID
                     //if class not exists, set classID=""
@@ -133,7 +136,7 @@ public class CommandDealer {
                 }
                 break;
             case "logout" :
-                utype = usertype.LOGOUT;
+                userType = usertype.LOGOUT;
                 currentID = "";
                 break;
             default:
@@ -195,7 +198,7 @@ public class CommandDealer {
                     System.out.println("Command Form error!");
                     return true;
                 case MATCH:
-                    if(!q.hasPerm(utype)){
+                    if(!q.hasPerm(userType)){
                         System.out.println("You are not authority to access this!");
                     }else{
                         //showQueryResult(q.generateSQL(currentID, uClass, uDepartment));

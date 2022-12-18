@@ -1,6 +1,8 @@
-package Entity;
+package Entity.Form;
 
-public class LeaveApplicationForm extends Form{
+import Entity.Form.Form;
+
+public class LeaveApplicationForm extends Form {
     static private String studentId;
     static private String expectLeaveTime;
     static private String expectEntryTime;

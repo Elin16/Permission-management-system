@@ -1,6 +1,8 @@
-package Entity;
+package Entity.Form;
 
-public class HealthReportForm extends Form{
+import Entity.Form.Form;
+
+public class HealthReportForm extends Form {
     static String studentId;
     static String temperature;
     static String location;

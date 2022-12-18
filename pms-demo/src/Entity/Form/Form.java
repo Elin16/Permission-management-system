@@ -1,4 +1,4 @@
-package Entity;
+package Entity.Form;
 
 public class Form {
     protected String title;

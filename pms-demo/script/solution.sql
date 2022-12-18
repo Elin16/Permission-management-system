@@ -168,6 +168,28 @@ and ID in (
     )
 )
 
+SELECT *
+FROM studentBelonging
+WHERE ID IN(
+    SELECT studentID
+    FROM (
+             SELECT studentID, max(IOTime) as lastOut
+             FROM IOLog
+             WHERE IOType='out'
+             GROUP BY studentID
+         ) AS outOfSchool
+    WHERE timediff(current_timestamp, lastOut) > '24:00:00'
+)
+AND ID IN (
+    (SELECT ID
+     FROM student
+     WHERE entryPerm > 0 AND ID NOT IN(
+         SELECT ID
+         FROM leaveApplication
+         WHERE progress='submitted' OR progress='approved' OR progress='success'
+        )
+    )
+) AND studentBelonging.dptID=1
 
 # 2.6
 select *
