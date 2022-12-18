@@ -2,12 +2,12 @@ package Controller;
 
 public class CommandParser {
     public String getParameter(String command, String s) {
-        int indexOfs = command.indexOf(s);
+        int indexOfs = command.indexOf(" "+ s + " ");
         int indexBegin = command.indexOf('\"', indexOfs)+1;
         int indexEnd = command.indexOf('\"', indexBegin);
         return command.substring(indexBegin, indexEnd);
     }
     public boolean optionExist(String command, String op){
-        return (command.indexOf(op)>=0);
+        return (command.contains(" " + op + " "));
     }
 }
