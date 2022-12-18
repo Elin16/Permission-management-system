@@ -14,8 +14,8 @@ where (studentID in(
         select classID
         from tutor
         where id='1'
-        )
-    ) and datediff(curdate(), reportDate) < 5);
+    )
+) and datediff(curdate(), reportDate) < 5);
 
 # 1.2 student
 select entryPerm
@@ -48,7 +48,7 @@ SELECT studentBelonging.classID, count(*)
 FROM entryApplication, studentBelonging
 WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
   AND entryApplication.studentID=studentBelonging.ID
- AND studentBelonging.classID='1'
+  AND studentBelonging.classID='1'
 GROUP BY studentBelonging.classID;
 /*按照院系查找分班级的统计信息*/
 SELECT studentBelonging.classID, count(*)
@@ -61,7 +61,7 @@ GROUP BY studentBelonging.classID;
 SELECT studentBelonging.dptID, count(*)
 FROM entryApplication, studentBelonging
 WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
-AND entryApplication.studentID=studentBelonging.ID
+  AND entryApplication.studentID=studentBelonging.ID
 GROUP BY studentBelonging.dptID;
 /*查询个人详情*/
 SELECT *
@@ -79,7 +79,7 @@ SELECT *
 FROM entryApplication, studentBelonging
 WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < 5
   AND entryApplication.studentID=studentBelonging.ID;
-  AND studentBelonging.dptID='1';
+AND studentBelonging.dptID='1';
 /*全校范围查找详情*/
 SELECT *
 FROM entryApplication, studentBelonging
@@ -108,7 +108,7 @@ limit 0,1;
 SELECT studentId, count(ID) as applicationAmount
 FROM entryApplication
 where studentId
-in (select ID from student where classID = '1')
+          in (select ID from student where classID = '1')
 GROUP BY studentId
 order by applicationAmount desc
 limit 0,1;
@@ -155,16 +155,16 @@ where ID in(
              group by studentID
          ) as c
     where timediff(current_timestamp, lastOut) > '24:00:00'
-    )
-and ID in (
+)
+  and ID in (
     (select distinct ID
      from student
      where entryPerm > 0 and ID not in
-        (
-        select ID
-        from leaveApplication
-        where progress='submitted' or progress='approved' or progress='success'
-        )
+                             (
+                                 select ID
+                                 from leaveApplication
+                                 where progress='submitted' or progress='approved' or progress='success'
+                             )
     )
 )
 
@@ -231,8 +231,8 @@ where ID in (
          ) as c
     where datediff(current_date, DATE(lastIn) ) > 1
 ) and inschool=1
-and classID
-in (select ID from class where dptID='1' )
+  and classID
+    in (select ID from class where dptID='1' )
 # class
 select ID
 from student
@@ -253,4 +253,3 @@ where ID in (
 
 
 # 2.9
-

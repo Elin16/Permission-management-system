@@ -76,4 +76,9 @@ public class DBRepo {
         Statement stmt = conn.createStatement();
         return stmt.executeQuery(sql);
     }
+
+    public boolean execute(String sql) throws SQLException {
+        Statement stmt = conn.createStatement();
+        return stmt.execute(sql);
+    }
 }
