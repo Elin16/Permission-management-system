@@ -1,4 +1,6 @@
 package Entity.Query;
+import Controller.CommandParser;
+
 import java.util.regex.Pattern;
 
 // 过去 n 天尚未批准的入/出校申请数量及详细信息；
@@ -11,6 +13,7 @@ public class AppQuery extends Query {
         TABLE = table;
         days = "";
         isStatistics = false;
+        cp = new CommandParser();
     }
     // get -d <n days> and -u(if exists)
     @Override

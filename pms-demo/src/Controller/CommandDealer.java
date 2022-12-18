@@ -206,7 +206,7 @@ public class CommandDealer {
                     if(!q.hasPerm(userType)){
                         System.out.println("You are not authority to access this!");
                     }else{
-                        // showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
+                        showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
                         String test = q.generateSQL(currentID, uClass, uDepartment);
                         System.out.println(test);
                     }

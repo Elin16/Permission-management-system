@@ -56,6 +56,9 @@ public class DBService {
         ResultSetMetaData resultSetMetaData = rs.getMetaData();
         int ColumnCount = resultSetMetaData.getColumnCount();
         int[] columnMaxLengths = new int[ColumnCount];
+        for(int i=0; i<ColumnCount; i++){
+            columnMaxLengths[i] = resultSetMetaData.getColumnName(i+1).length();
+        }
         ArrayList<String[]> results = new ArrayList<>();
         while (rs.next()) {
             String[] columnStr = new String[ColumnCount];
