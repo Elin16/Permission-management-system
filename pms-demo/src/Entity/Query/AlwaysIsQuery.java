@@ -1,6 +1,7 @@
 package Entity.Query;
 
 import Controller.CommandParser;
+import Controller.usertype;
 
 /*
 #  已出校但尚未返回校园（即离校状态）的学生数量、个人信息及各自的离校时间；
@@ -27,10 +28,16 @@ public class AlwaysIsQuery extends Query{
     // TODO: 2022/12/18 modify getParameters to add -r and -d
     @Override
     protected boolean getParameters() {
-        // get -u(if exists)
-        isStatistics = cp.optionExist(currentCMD,"-u");
-
+        // get -d
+        days = getParameterOfPositiveNumber("-d");
+        if (days.equals(""))
+            return false;
+        // check -r and get -r's parameter
         return true;
+    }
+    @Override
+    public boolean hasPerm(usertype uType){
+        return !isStudent();
     }
     // TODO: 2022/12/18 modify sql body to add -r
     //Major Query

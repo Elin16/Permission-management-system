@@ -1,6 +1,7 @@
 package Entity.Query;
 
 import Controller.CommandParser;
+import Controller.usertype;
 
 import java.util.regex.Pattern;
 
@@ -18,15 +19,18 @@ public class ExactReportQuery extends Query{
     // get -u(if exists)
     @Override
     protected boolean getParameters() {
-        String parameter;
         // get -d <n days>
-        parameter = cp.getParameter(currentCMD, "-d");
-        if (!Pattern.matches(positiveNumberPattern, parameter))
+        days = getParameterOfPositiveNumber("-d");
+        if (days.equals(""))
             return false;
-        days = parameter;
         // get -u(if exists)
         isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
+    }
+    @Override
+    public boolean hasPerm(usertype uType){
+        userType = uType;
+        return !isStudent();
     }
     //Major Query
     @Override

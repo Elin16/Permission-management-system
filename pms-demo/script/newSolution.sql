@@ -50,12 +50,19 @@ where b.ID=a.studentID
 
 # 2.2
 # n student submit most entryApplication
-SELECT b.*, count(a.ID) as applicationAmount
-FROM studentBelonging as b, entryApplication as a
-where b.ID=a.studentID
-GROUP BY b.ID
-order by applicationAmount desc
-limit 0,2;
+SELECT b.*, count(a.ID) AS applicationAmount
+FROM studentBelonging AS t, entryApplication AS a
+WHERE t.ID=a.studentID
+GROUP BY t.ID
+ORDER BY applicationAmount DESC
+LIMIT 0,2;
+
+SELECT t.*, count(app.ID) AS applicationAmount
+FROM studentBelonging AS t, entryApplication AS app
+WHERE t.ID=app.studentID
+GROUP BY t.ID
+ORDER BY applicationAmount DESC
+LIMIT 0,2;
 
 
 # 2.3
@@ -148,16 +155,18 @@ WHERE t.ID IN
 
 # 2.9
 # campus having most IOLogs for every department
-select d.dptID, d.campusName from(
-                                     select c.dptID, c.campusName, rank()over(partition by c.dptID order by (number) desc) as io_rank
-                                     from (
-                                              select b.dptID, io.campusName, count(*) as number
-                                              from studentBelonging as b, IOLog as io
-                                              where b.ID=io.studentID
-                                              group by b.dptID, io.campusName
-                                          ) as c
-                                 ) as d
-where d.io_rank=1;
+SELECT ranked.dptID, ranked.campusName
+FROM(
+     SELECT counted.dptID, counted.campusName,
+            rank()OVER(PARTITION BY counted.dptID ORDER BY (number) DESC) AS io_rank
+     FROM (
+          SELECT t.dptID, io.campusName, count(*) AS number
+          FROM studentBelonging AS t, IOLog AS io
+          WHERE t.ID=io.studentID
+          group BY t.dptID, io.campusName
+         ) AS counted
+     ) AS ranked
+WHERE ranked.io_rank=1;
 
 
 

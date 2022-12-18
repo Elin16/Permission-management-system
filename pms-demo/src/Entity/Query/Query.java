@@ -4,6 +4,8 @@ import Controller.CmdMatchRes;
 import Controller.CommandParser;
 import Controller.usertype;
 
+import java.util.regex.Pattern;
+
 public class Query {
     protected CommandParser cp;
     protected String MY_CMD;
@@ -13,7 +15,6 @@ public class Query {
     protected boolean isStatistics;
     protected String currentCMD;
     protected usertype userType;
-
     public Query() {
     }
 
@@ -32,8 +33,8 @@ public class Query {
     }
     // this is used in the queries which user can set the range of query
     // etc. the top n student of xxx
-    public boolean hasPerm(usertype utype){
-        userType = utype;
+    public boolean hasPerm(usertype uType){
+        userType = uType;
         return true;
     }
     //Generate corresponding sql to the command
@@ -47,8 +48,12 @@ public class Query {
     // If anyone of the required parameters not exist, return false
     // otherwise, return ture
     protected boolean getParameters(){
-        getQueryType();
         return true;
+    }
+    protected String getParameterOfPositiveNumber(String option){
+        String parameter;
+        parameter = cp.getParameter(currentCMD, option);
+        return  (Pattern.matches(positiveNumberPattern, parameter))? parameter: "";
     }
     protected String sqlHeader(){
         if(! isStatistics){
@@ -116,5 +121,17 @@ public class Query {
                 break;
         }
         return level +" "+ group + "\n";
+    }
+    protected boolean isStudent(){
+        return (userType == usertype.STUDENT);
+    }
+    protected boolean isTeacher(){
+        return (userType != usertype.STUDENT);
+    }
+    protected boolean isDptAdmin(){
+        return (userType == usertype.ADMIN);
+    }
+    protected boolean isSuperUser(){
+        return (userType == usertype.SUPER_USER);
     }
 }

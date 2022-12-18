@@ -1,6 +1,7 @@
 package Entity.Query;
 
 import Controller.CommandParser;
+import Controller.usertype;
 
 /*
 #  已出校但尚未返回校园（即离校状态）的学生数量、个人信息及各自的离校时间；
@@ -24,6 +25,11 @@ public class LeaveIsQuery extends Query{
         // get -u(if exists)
         isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
+    }
+    @Override
+    public boolean hasPerm(usertype uType){
+        userType = uType;
+        return !isStudent();
     }
     //Major Query
     @Override
