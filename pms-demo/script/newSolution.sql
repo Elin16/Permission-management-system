@@ -1,9 +1,11 @@
 # 1.1
 # query last n days healthLog
-select *
+
+select count(*)
 from studentBelonging as b, healthLog as h
 where b.ID=h.studentID
-and datediff(curdate(), reportDate) < 5;
+and datediff(curdate(), reportDate) < 5
+group by b.classID;
 
 # 1.2
 # query entry permission
@@ -27,6 +29,10 @@ where b.ID=a.studentID
 # 1.4
 # query off-campus time in the last year
 # not know how to do
+
+
+
+
 
 # 2.1
 # submitted entryApplication/leaveApplication in last n days
@@ -117,16 +123,32 @@ and b.ID in (
              group by studentID
          ) as c
     where datediff(current_date, DATE(lastIn) ) > 1
-) and s.inschool=1
+) and s.inschool=1;
 
 # 2.8
-#
+# show student who continue submitting healthReport for n days
+select studentBelonging.*
+from studentBelonging,
+(select h.studentID, max(reportTime) as m, min(reportTime) as n
+ from healthLog as h
+ where datediff(current_date, h.reportDate) < 10
+ group by h.studentID) as c
+where timediff(c.m, c.n) < '00:01:00'
+and c.studentID=studentBelonging.ID;
+
 
 # 2.9
 # campus having most IOLogs for every department
-select
-
-
+select d.dptID, d.campusName from(
+                                     select c.dptID, c.campusName, rank()over(partition by c.dptID order by (number) desc) as io_rank
+                                     from (
+                                              select b.dptID, io.campusName, count(*) as number
+                                              from studentBelonging as b, IOLog as io
+                                              where b.ID=io.studentID
+                                              group by b.dptID, io.campusName
+                                          ) as c
+                                 ) as d
+where d.io_rank=1;
 
 
 
