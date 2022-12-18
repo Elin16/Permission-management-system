@@ -97,24 +97,25 @@ $ show-yearly-leave-time-count
 ```
 进阶查询
 ```bash
-r: range n: number s:state d: day oos: out of school
-
-# 过去 n 天尚未批准的入校申请和出校申请数量及详细信息；
-$ show-entry-app -s <wait> -d <n days>
+# r: range n: number s:state d: day oos: out of school
+#  -u is (optional, means show upper layer statistics. default is show detail)
+# 过去 n 天尚未批准的入校申请和出校申请数量及详细信息；可以按照申请状态筛选
+$ show-entry-app -d <n days> (-u) -w <state>
+$ show-leave-app -d <n days> (-u) -w <state>
 # 前 n 个提交入校申请最多的学生，支持按多级范围（全校、院系、班级）进行筛选；
-$ show-most-entry-app -n <num student> -r <0/dept id /class id> 
+$ show-most-entry-app -n <num student> -r <u/d/c> -id <null/dpt Id/class Id> 
 # 前 n 个平均离校时间最长的学生，支持按多级范围（全校、院系、班级）进行筛选；
-$ show-most-leave-time -n <num student> -r <0/dept id /class id>
+$ show-most-leave-time -n <num student>  -r <u/d/c> -id <null/dpt Id/class Id> 
 #  已出校但尚未返回校园（即离校状态）的学生数量、个人信息及各自的离校时间；
-$ show-leave-oos 
+$ show-oos (-u)
 # 未提交出校申请但离校状态超过 24h 的学生数量、个人信息；
-$ show-stay-oos
+$ show-stay-oos (-u)
 # 已提交出校申请但未离校的学生数量、个人信息；
-$ show-leave-is
+$ show-leave-is (-u)
 # 过去 n 天一直在校未曾出校的学生，支持按多级范围（全校、院系、班级）进行筛选；
-$ show-always-is -d <n days> -r <u/dept id /class id>
+$ show-always-is -d <n days> -r <u/d/c> -id <null/dpt Id/class Id> 
 # 连续 n 天填写“健康日报”时间（精确到分钟）完全一致的学生数量，个人信息；
-$ show-exactly-report -d <n days>
+$ show-exact-report -d <n days> (-u)
 # 过去 n 天每个院系学生产生最多出入校记录的校区。
 $ show-most-ios-campus
 ```

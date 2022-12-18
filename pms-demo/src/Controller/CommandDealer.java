@@ -3,7 +3,7 @@ package Controller;
 import Entity.Form.Form;
 import Entity.Query.AppQuery;
 import Entity.Query.Query;
-import Entity.Query.StateQuery;
+import Entity.Query.StayOosQuery;
 import Service.DBService;
 import Service.FormSubmitter;
 
@@ -28,7 +28,7 @@ public class CommandDealer {
         this.queryList = new ArrayList<>();
         queryList.add(new AppQuery("show-entry-app","entryApplication"));
         queryList.add(new AppQuery("show-leave-app","leaveApplication"));
-        queryList.add(new StateQuery());
+        queryList.add(new StayOosQuery());
         this.dbs.dropStudentBelongingView();
         this.dbs.createStudentBelongingView();
     }
