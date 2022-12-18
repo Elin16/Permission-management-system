@@ -52,7 +52,7 @@ public class Query {
     }
     protected String sqlHeader(){
         if(! isStatistics){
-            return "SELECT *";
+            return "SELECT *\n";
         }
         switch (userType){
             case ADMIN:
@@ -65,11 +65,11 @@ public class Query {
                 //return "SELECT studentBelonging.classID, count(*)";
             case STUDENT:
                 //s: query class,group by class
-                return "SELECT studentBelonging.classID, count(*)";
+                return "SELECT studentBelonging.classID, count(*)\n";
             case SUPER_USER:
                 //query universal
                 //group by dpt
-                return "SELECT studentBelonging.dptID, count(*)";
+                return "SELECT studentBelonging.dptID, count(*)\n";
             default:
                 return "";
         }
@@ -105,16 +105,16 @@ public class Query {
                     level = " AND studentBelonging.classID=" + classId;
                     group = " GROUP BY studentBelonging.classID";
                 }else{
-                    level = " AND studentBelonging.studentID=" + ID;
+                    level = " AND studentBelonging.ID=" + ID;
                 }
                 break;
             case SUPER_USER:
                 //query universal
                 //group by dpt
-                if (isStatistics) group = "GROUP BY studentBelonging.dptID";
+                if (isStatistics) group = " GROUP BY studentBelonging.dptID";
             default:
                 break;
         }
-        return level + group;
+        return level +" "+ group + "\n";
     }
 }

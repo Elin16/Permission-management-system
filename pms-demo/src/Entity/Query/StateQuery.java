@@ -50,7 +50,7 @@ public class StateQuery extends Query{
                 "         WHERE progress='submitted' OR progress='approved' OR progress='success'\n" +
                 "        )\n" +
                 "    )\n" +
-                ")";
+                ")\n";
     }
 
 }
