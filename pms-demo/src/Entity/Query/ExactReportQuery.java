@@ -5,14 +5,8 @@ import Controller.CommandParser;
 import java.util.regex.Pattern;
 
 /*
-#  已出校但尚未返回校园（即离校状态）的学生数量、个人信息及各自的离校时间；
-$ show-oos (-u)
-# 未提交出校申请但离校状态超过 24h 的学生数量、个人信息；
-$ show-stay-oos (-u)
-# 已提交出校申请但未离校的学生数量、个人信息；
-$ show-leave-is (-u)
-# 过去 n 天一直在校未曾出校的学生，支持按多级范围（全校、院系、班级）进行筛选；
-$ show-always-is -d <n days> -r <u/dept id /class id> (-u)
+# 连续 n 天填写“健康日报”时间（精确到分钟）完全一致的学生数量，个人信息；
+$ show-exact-report -d <n days> (-u)
 * */
 public class ExactReportQuery extends Query{
     private String days;
@@ -34,11 +28,18 @@ public class ExactReportQuery extends Query{
         isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
     }
-    // TODO: 2022/12/18  Modify sql body
     //Major Query
     @Override
     protected String sqlBody(){
-        return "\n";
+        return "FROM studentBelonging AS t\n" +
+                "WHERE t.ID IN\n" +
+                "      (SELECT c.studentID\n" +
+                "          FROM  (SELECT h.studentID, MAX(reportTime) as maxT, MIN(reportTime) as minT\n" +
+                "                 FROM healthLog as h\n" +
+                "                 WHERE datediff(current_date, h.reportDate) < "+ days + "\n" +
+                "                 GROUP BY h.studentID\n" +
+                "                ) AS c\n" +
+                "                WHERE timediff(c.maxT, c.minT) < '00:01:00')\n";
     }
 
 }

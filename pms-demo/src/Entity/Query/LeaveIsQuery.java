@@ -25,11 +25,18 @@ public class LeaveIsQuery extends Query{
         isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
     }
-    // TODO: 2022/12/18 modify sql body
     //Major Query
     @Override
     protected String sqlBody(){
-        return "\n";
+        return "FROM studentBelonging AS t, student AS s\n" +
+                "WHERE t.ID=s.ID\n" +
+                "AND t.ID IN(\n" +
+                "    (\n" +
+                "        SELECT studentID\n" +
+                "        FROM leaveApplication\n" +
+                "        WHERE progress='submitted' OR progress='approved' OR progress='success'\n" +
+                "    )\n" +
+                ") AND s.inschool=1\n";
     }
 
 }

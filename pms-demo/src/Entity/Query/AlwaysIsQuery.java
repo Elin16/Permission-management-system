@@ -13,13 +13,18 @@ $ show-leave-is (-u)
 $ show-always-is -d <n days> -r <u/dept id /class id> (-u)
 * */
 public class AlwaysIsQuery extends Query{
+    private String days;
     public AlwaysIsQuery(){
         MY_CMD = "show-always-is";
         isStatistics = false;
         cp = new CommandParser();
+        days = "0";
     }
+    //
     // get -u(if exists)
     // get -r 0/dpt ID/ class ID
+
+    // TODO: 2022/12/18 modify getParameters to add -r and -d
     @Override
     protected boolean getParameters() {
         // get -u(if exists)
@@ -27,11 +32,22 @@ public class AlwaysIsQuery extends Query{
 
         return true;
     }
-    // TODO: 2022/12/18 modify sql body
+    // TODO: 2022/12/18 modify sql body to add -r
     //Major Query
     @Override
     protected String sqlBody(){
-        return "\n";
+        return "FROM studentBelonging AS t, student AS s\n" +
+                "WHERE t.ID=s.ID\n" +
+                "AND t.ID IN (\n" +
+                "    SELECT studentID\n" +
+                "    FROM (\n" +
+                "             SELECT studentID, max(IOTime) AS lastIn\n" +
+                "             FROM IOLog\n" +
+                "             WHERE IOType='in'\n" +
+                "             GROUP BY studentID\n" +
+                "         ) AS lastInRecord\n" +
+                "    WHERE datediff(current_date, DATE(lastIn) ) > +" + days + "\n" +
+                ") AND s.inschool=1\n";
     }
 
 }

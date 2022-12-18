@@ -64,14 +64,21 @@ limit 0,2;
 
 
 
-# 2.4
+# 2.4 show-oos
 # show off-campus students , number, info , and leave time
-select s.*, b.dptID, max(IOTime)
+select * from
+(select s.*, b.dptID, max(IOTime)
 from studentBelonging as b, student as s, IOLog as io
 where b.ID=s.ID and s.ID=io.studentID and inschool=0
-group by b.ID;
+group by b.ID) as t where t.ID=t.ID;
 
-# 2.5
+select t.dptID, count(*)  from
+    (select s.*, b.dptID, max(IOTime)
+     from studentBelonging as b, student as s, IOLog as io
+     where b.ID=s.ID and s.ID=io.studentID and inschool=0
+     group by b.ID) as t where t.dptID=1;
+
+# 2.5 show-stay-oos
 # show off-campus more than 24 hours student who has no active leaveApplication,
 SELECT *
 FROM studentBelonging
@@ -96,12 +103,12 @@ WHERE ID IN(
     )
 ) AND studentBelonging.dptID=1;
 
-# 2.6
+# 2.6 show-leave-is
 # on-campus student who has submitted leaveApplication, number and info
 select *
-from studentBelonging as b, student as s
-where b.ID=s.ID
-and b.ID in(
+from studentBelonging as t, student as s
+where t.ID=s.ID
+and t.ID in(
     (
         select studentID
         from leaveApplication
@@ -109,32 +116,34 @@ and b.ID in(
     )
 ) and s.inschool=1;
 
-# 2.7
+# 2.7 always-is
 # students in school for last n days
-select *
-from studentBelonging as b, student as s
-where b.ID=s.ID
-and b.ID in (
-    select studentID
-    from (
-             select studentID, max(IOTime) as lastIn
-             from IOLog
-             where IOType='in'
-             group by studentID
-         ) as c
-    where datediff(current_date, DATE(lastIn) ) > 1
-) and s.inschool=1;
+SELECT *
+FROM studentBelonging AS t, student AS s
+WHERE t.ID=s.ID
+AND t.ID IN (
+    SELECT studentID
+    FROM (
+             SELECT studentID, max(IOTime) AS lastIn
+             FROM IOLog
+             WHERE IOType='in'
+             GROUP BY studentID
+         ) AS lastInRecord
+    WHERE datediff(current_date, DATE(lastIn) ) > 1
+) AND s.inschool=1;
 
-# 2.8
+# 2.8 show-exact-report
 # show student who continue submitting healthReport for n days
-select studentBelonging.*
-from studentBelonging,
-(select h.studentID, max(reportTime) as m, min(reportTime) as n
- from healthLog as h
- where datediff(current_date, h.reportDate) < 10
- group by h.studentID) as c
-where timediff(c.m, c.n) < '00:01:00'
-and c.studentID=studentBelonging.ID;
+SELECT *
+FROM studentBelonging AS t
+WHERE t.ID IN
+      (SELECT c.studentID
+          FROM  (SELECT h.studentID, max(reportTime) as maxT, min(reportTime) as minT
+                 from healthLog as h
+                 where datediff(current_date, h.reportDate) < 10
+                 group by h.studentID
+                ) as c
+                where timediff(c.maxT, c.minT) < '00:01:00');
 
 
 # 2.9

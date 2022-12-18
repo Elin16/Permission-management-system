@@ -27,11 +27,30 @@ public class StayOosQuery extends Query{
         isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
     }
-    // TODO: 2022/12/18  Modify sql body
     //Major Query
     @Override
     protected String sqlBody(){
-        return "\n";
+        return "FROM studentBelonging as t\n" +
+                "WHERE ID IN(\n" +
+                "    SELECT studentID\n" +
+                "    FROM (\n" +
+                "             SELECT studentID, max(IOTime) as lastOut\n" +
+                "             FROM IOLog\n" +
+                "             WHERE IOType='out'\n" +
+                "             GROUP BY studentID\n" +
+                "         ) AS outOfSchool\n" +
+                "    WHERE timediff(current_timestamp, lastOut) > '24:00:00'\n" +
+                ")\n" +
+                "  AND ID IN (\n" +
+                "    (SELECT ID\n" +
+                "     FROM student\n" +
+                "     WHERE entryPerm > 0 AND ID NOT IN(\n" +
+                "         SELECT ID\n" +
+                "         FROM leaveApplication\n" +
+                "         WHERE progress='submitted' OR progress='approved' OR progress='success'\n" +
+                "     )\n" +
+                "    )\n" +
+                ")\n";
     }
 
 }

@@ -31,8 +31,8 @@ public class AppQuery extends Query {
     //Major Query
     @Override
     protected String sqlBody(){
-        return " FROM " + TABLE + ", studentBelonging\n" +
+        return " FROM " + TABLE + ", studentBelonging as t\n" +
         "WHERE progress='submitted' AND datediff(curdate(), date(applyTime)) < " + days +"\n"+
-        "AND "+ TABLE +".studentID=studentBelonging.ID\n";
+        "AND "+ TABLE +".studentID=t.ID\n";
     }
 }

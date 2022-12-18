@@ -25,11 +25,14 @@ public class OosQuery extends Query{
         isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
     }
-    // TODO: 2022/12/18  modify sql Body
     //Major Query
     @Override
     protected String sqlBody(){
-        return "\n";
+        return  "from (select s.*, b.dptID, max(IOTime)\n" +
+                "from studentBelonging as b, student as s, IOLog as io\n" +
+                "where b.ID=s.ID and s.ID=io.studentID and inschool=0\n" +
+                "group by b.ID) as t\n" +
+                "where t.ID = t.ID\n";
     }
 
 }

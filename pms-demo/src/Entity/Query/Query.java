@@ -65,11 +65,11 @@ public class Query {
                 //return "SELECT studentBelonging.classID, count(*)";
             case STUDENT:
                 //s: query class,group by class
-                return "SELECT studentBelonging.classID, count(*)\n";
+                return "SELECT t.classID, count(*)\n";
             case SUPER_USER:
                 //query universal
                 //group by dpt
-                return "SELECT studentBelonging.dptID, count(*)\n";
+                return "SELECT t.dptID, count(*)\n";
             default:
                 return "";
         }
@@ -86,32 +86,32 @@ public class Query {
             case ADMIN:
                 //s:query dpt, group by class
                 //d:query dpt
-                level = " AND studentBelonging.dptID=" + dptId;
-                if (isStatistics) group = " GROUP BY studentBelonging.classID";
+                level = " AND t.dptID=" + dptId;
+                if (isStatistics) group = " GROUP BY t.classID";
                 break;
             case TUTOR:
                 //s: query dpt, group by class
                 //d: query class
                 if (isStatistics){
-                    level = " AND studentBelonging.dptID=" + dptId;
-                    group = " GROUP BY studentBelonging.classID";
+                    level = " AND t.dptID=" + dptId;
+                    group = " GROUP BY t.classID";
                 }else{
-                    level = " AND studentBelonging.classID=" + classId;
+                    level = " AND t.classID=" + classId;
                 }
                 break;
             case STUDENT:
                 //s: query class,group by class
                 if(isStatistics){
-                    level = " AND studentBelonging.classID=" + classId;
-                    group = " GROUP BY studentBelonging.classID";
+                    level = " AND t.classID=" + classId;
+                    group = " GROUP BY t.classID";
                 }else{
-                    level = " AND studentBelonging.ID=" + ID;
+                    level = " AND t.ID=" + ID;
                 }
                 break;
             case SUPER_USER:
                 //query universal
                 //group by dpt
-                if (isStatistics) group = " GROUP BY studentBelonging.dptID";
+                if (isStatistics) group = " GROUP BY t.dptID";
             default:
                 break;
         }
