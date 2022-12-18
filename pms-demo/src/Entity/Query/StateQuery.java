@@ -1,5 +1,7 @@
 package Entity.Query;
 
+import Controller.CommandParser;
+
 import java.util.regex.Pattern;
 
 /*
@@ -16,6 +18,7 @@ public class StateQuery extends Query{
     public StateQuery(){
         MY_CMD = "show-stay-oos";
         isStatistics = false;
+        cp = new CommandParser();
     }
     // get -u(if exists)
     @Override
