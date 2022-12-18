@@ -121,8 +121,8 @@ $ show-most-ios-campus
 ### 审批页 t
 老师审批 ps 审批页也有查询功能
 ```bash
-$ OK <num> -r <reason>
-$ NO <num> -r <reason>
-$ OKALL
-$ NOALL -r <reason>
+$ OKEntry <num> -r <reason>
+$ NOEntry <num> -r <reason>
+$ OKALLEntry
+$ NOALLEntry -r <reason>
 ```
