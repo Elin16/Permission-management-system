@@ -1,9 +1,7 @@
 package Controller;
 
 import Entity.Form.Form;
-import Entity.Query.AppQuery;
-import Entity.Query.Query;
-import Entity.Query.StayOosQuery;
+import Entity.Query.*;
 import Service.DBService;
 import Service.FormSubmitter;
 
@@ -28,6 +26,16 @@ public class CommandDealer {
         this.queryList = new ArrayList<>();
         queryList.add(new AppQuery("show-entry-app","entryApplication"));
         queryList.add(new AppQuery("show-leave-app","leaveApplication"));
+        queryList.add(new NpAppQuery("show-np-entry-app","entryApplication"));
+        queryList.add(new NpAppQuery("show-np-leave-app","leaveApplication"));
+        queryList.add(new AlwaysIsQuery());
+        queryList.add(new EntryPermQuery());
+        queryList.add(new ExactReportQuery());
+        queryList.add(new HealthReportQuery());
+        queryList.add(new LeaveIsQuery());
+        queryList.add(new MostAppEntryQuery());
+        queryList.add(new MostIOQuery());
+        queryList.add(new OosQuery());
         queryList.add(new StayOosQuery());
         this.dbs.dropStudentBelongingView();
         this.dbs.createStudentBelongingView();

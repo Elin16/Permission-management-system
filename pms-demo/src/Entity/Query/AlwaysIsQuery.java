@@ -4,17 +4,13 @@ import Controller.CommandParser;
 import Controller.usertype;
 
 /*
-#  已出校但尚未返回校园（即离校状态）的学生数量、个人信息及各自的离校时间；
-$ show-oos (-u)
-# 未提交出校申请但离校状态超过 24h 的学生数量、个人信息；
-$ show-stay-oos (-u)
-# 已提交出校申请但未离校的学生数量、个人信息；
-$ show-leave-is (-u)
 # 过去 n 天一直在校未曾出校的学生，支持按多级范围（全校、院系、班级）进行筛选；
 $ show-always-is -d <n days> -r <u/dept id /class id> (-u)
 * */
 public class AlwaysIsQuery extends Query{
     private String days;
+    private String range;
+    private String queryID;
     public AlwaysIsQuery(){
         MY_CMD = "show-always-is";
         isStatistics = false;
@@ -33,13 +29,23 @@ public class AlwaysIsQuery extends Query{
         if (days.equals(""))
             return false;
         // check -r and get -r's parameter
+        if (cp.optionExist(currentCMD,"-r")){
+            range = cp.getParameter(currentCMD,"-r");
+            if(! range.equals("u")){
+                queryID = cp.getParameter(currentCMD,"-id");
+                if(queryID.equals("")) return false;
+            }
+        }else{
+            range = "";
+        }
         return true;
     }
     @Override
     public boolean hasPerm(usertype uType){
-        return !isStudent();
+        userType = uType;
+        if( isStudent() ) return false;
+        return hasPermWithRangeSetter(range);
     }
-    // TODO: 2022/12/18 modify sql body to add -r
     //Major Query
     @Override
     protected String sqlBody(){
@@ -56,5 +62,12 @@ public class AlwaysIsQuery extends Query{
                 "    WHERE datediff(current_date, DATE(lastIn) ) > +" + days + "\n" +
                 ") AND s.inschool=1\n";
     }
-
+    @Override
+    public String generateSQL(String uId, String classId, String dptId){
+        if(range.equals("")){
+            return sqlHeader() + sqlBody() + sqlTail(uId, classId, dptId);
+        }else{
+            return sqlHeader() + sqlBody() + sqlTailWithRangeSetter(range, queryID);
+        }
+    }
 }

@@ -39,7 +39,7 @@ public class Query {
     }
     //Generate corresponding sql to the command
     public String generateSQL(String uId, String classId, String dptId){
-        return sqlHeader() + sqlBody() + sqlTailor(uId, classId, dptId);
+        return sqlHeader() + sqlBody() + sqlTail(uId, classId, dptId);
     }
     protected void getQueryType(){
         // get  -u (which means upper layer statistics), if not exist, than it means default(show own layer detail)
@@ -83,7 +83,7 @@ public class Query {
         return "";
     }
     //Add Level of query and Group By
-    protected String sqlTailor(String ID, String classId, String dptId){
+    protected String sqlTail(String ID, String classId, String dptId){
         // is Statistics:is Detail
         String level = "";
         String group = "";
@@ -133,5 +133,19 @@ public class Query {
     }
     protected boolean isSuperUser(){
         return (userType == usertype.SUPER_USER);
+    }
+    protected boolean hasPermWithRangeSetter(String range){
+        if(range.equals("u") || range.equals("d"))
+            return isSuperUser();
+        if(range.equals("c"))
+            return isSuperUser() || isDptAdmin();
+        return false;
+    }
+    protected String sqlTailWithRangeSetter(String range, String queryID){
+        if(range.equals("d")){
+            return "AND t.dptId=" + queryID ;
+        }else if(range.equals("c")){
+            return "AND t.classId=" + queryID;
+        }else return "";
     }
 }

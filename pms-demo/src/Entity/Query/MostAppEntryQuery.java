@@ -8,31 +8,55 @@ import Controller.usertype;
 $ show-most-entry-app -n <num student> -r <u/d/c> -id <null/dpt Id/class Id>
 * */
 public class MostAppEntryQuery extends Query{
+    private String number;
+    private String range;
+    private String queryID;
     public MostAppEntryQuery(){
         MY_CMD = "show-most-entry-app";
         isStatistics = false;
         cp = new CommandParser();
     }
     //todo: overwrite getParameter
-    //todo: multiple range should check the user's permission
     @Override
+    protected boolean getParameters(){
+        number = getParameterOfPositiveNumber("-d");
+        if ( number.equals("") )
+            return false;
+        if (cp.optionExist(currentCMD,"-r")){
+            range = cp.getParameter(currentCMD,"-r");
+            if(! range.equals("u")){
+                queryID = cp.getParameter(currentCMD,"-id");
+                if(queryID.equals("")) return false;
+            }
+        }else{
+            range = "";
+        }
+        return true;
+    }
     public boolean hasPerm(usertype uType){
         userType = uType;
-        return isTeacher();
+        if( isStudent() ) return false;
+        return hasPermWithRangeSetter(range);
     }
-    //Major Query
+    //todo: multiple range should check the user's permission
     @Override
     protected String sqlBody(){
-        return  "FROM student, studentBelonging as t\n" +
-                "WHERE student.ID=t.ID\n";
+        return  "FROM(\n" +
+                "   SELECT s.*, count(app.ID) AS applicationAmount\n" +
+                "   FROM studentBelonging AS s, entryApplication AS app\n" +
+                "   WHERE s.ID=app.studentID\n" +
+                "   GROUP BY s.ID\n" +
+                "   ORDER BY applicationAmount DESC\n" +
+                "   LIMIT 0,2) AS t \n" +
+                "WHERE t.ID=t.ID\n";
     }
+
     @Override
     public String generateSQL(String uId, String classId, String dptId){
-        return "SELECT t.*, count(app.ID) AS applicationAmount\n" +
-                "FROM studentBelonging AS t, entryApplication AS app\n" +
-                "WHERE t.ID=app.studentID\n" +
-                "GROUP BY t.ID\n" +
-                "ORDER BY applicationAmount DESC\n" +
-                "LIMIT 0,2\n";
+            if(range.equals("")){
+                return sqlHeader() + sqlBody() + sqlTail(uId, classId, dptId);
+            }else{
+                return sqlHeader() + sqlBody() + sqlTailWithRangeSetter(range, queryID);
+            }
     }
 }
