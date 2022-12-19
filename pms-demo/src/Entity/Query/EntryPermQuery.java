@@ -16,9 +16,11 @@ public class EntryPermQuery extends Query{
     // get -u(if exists)
     @Override
     protected boolean getParameters() {
-        // get -u(if exists)
-        isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
+    }
+    @Override
+    protected String sqlHeader(){
+        return  "SELECT student.ID, student.perm\n";
     }
     //Major Query
     @Override

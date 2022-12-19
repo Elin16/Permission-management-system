@@ -1,7 +1,7 @@
-show-stay-oos : -u
-show-always-is no perm
-show-entry-perm too many things
-show-health-report studentID
+show-stay-oos : -u   KO
+show-always-is no perm KO
+show-entry-perm too many things KO
+show-health-report studentID KO
 show-leave-is
 show-most-entry-app no perm
 show-np-entry-app + null

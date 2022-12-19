@@ -135,6 +135,8 @@ public class Query {
         return (userType == usertype.SUPER_USER);
     }
     protected boolean hasPermWithRangeSetter(String range){
+        if(range.equals(""))
+            return true;
         if(range.equals("u") || range.equals("d"))
             return isSuperUser();
         if(range.equals("c"))

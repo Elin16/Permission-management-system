@@ -13,6 +13,7 @@ public class NpAppQuery extends Query {
         days = "";
         isStatistics = false;
         cp = new CommandParser();
+        progressSql = "";
     }
     // get -d <n days> and -u(if exists)
     @Override
@@ -36,7 +37,7 @@ public class NpAppQuery extends Query {
     @Override
     protected String sqlBody(){
         return " FROM " + TABLE + ", studentBelonging as t\n" +
-        "WHERE + "+ progressSql +" AND datediff(curdate(), date(applyTime)) < " + days +"\n"+
+        "WHERE "+ progressSql +" AND datediff(curdate(), date(applyTime)) < " + days +"\n"+
         "AND "+ TABLE +".studentID=t.ID\n";
     }
     private String getParameterOfWaitState(){

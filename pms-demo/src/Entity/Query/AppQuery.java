@@ -18,7 +18,7 @@ public class AppQuery extends Query {
         isStatistics = false;
         cp = new CommandParser();
     }
-    // get -d <n days> and -u(if exists)
+    // get -d <n days>
     @Override
     protected boolean getParameters() {
         // get -w(if exists) and -w's parameter

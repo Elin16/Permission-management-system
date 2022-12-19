@@ -28,11 +28,8 @@ public class OosQuery extends Query{
     //Major Query
     @Override
     protected String sqlBody(){
-        return  "from (select s.*, b.dptID, max(IOTime)\n" +
-                "from studentBelonging as b, student as s, IOLog as io\n" +
-                "where b.ID=s.ID and s.ID=io.studentID and inschool=0\n" +
-                "group by b.ID) as t\n" +
-                "where t.ID = t.ID\n";
+        return  "FROM student, studentBelongying AS t\n" +
+                "WHERE student.ID = t.ID " +
+                "AND student.inSchool=0\n";
     }
-
 }

@@ -24,7 +24,7 @@ public class HealthReportQuery extends Query{
     @Override
     protected String sqlBody(){
         return  "FROM healthLog, studentBelonging as t\n" +
-                "WHERE (studentID='19307090001' and datediff(curdate(), reportDate) < 5)\n" +
+                "WHERE datediff(curdate(), reportDate) < 5\n" +
                 "AND t.ID=studentID\n";
     }
 

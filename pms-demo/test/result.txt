@@ -250,11 +250,8 @@ show-oos -u
 |19307090003|Huang Yilin|   12345|        1|       0|      3|huanyilin@fudan.edu.cn|south37#5002|   123456780|tangchen1#103|Citizen ID Card|332522200001010003|     H|    2|2022-12-15 23:00:00|
 +-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----+-------------------+
 SELECT *
-from (select s.*, b.dptID, max(IOTime)
-from studentBelonging as b, student as s, IOLog as io
-where b.ID=s.ID and s.ID=io.studentID and inschool=0
-group by b.ID) as t
-where t.ID = t.ID
+FROM student, studentBelongying AS t
+WHERE student.ID = t.ID AND student.inSchool=0
 
 
 show-stay-oos -u

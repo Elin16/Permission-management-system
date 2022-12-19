@@ -38,6 +38,7 @@ public class AlwaysIsQuery extends Query{
         }else{
             range = "";
         }
+        isStatistics = cp.optionExist(currentCMD,"-u");
         return true;
     }
     @Override
