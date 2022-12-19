@@ -29,7 +29,7 @@ public class NpAppQuery extends Query {
             String progress = getParameterOfWaitState();
             if (progress.equals(""))
                 return false;
-            progressSql = "(progress='+" + progress + "+')";
+            progressSql = "(progress='+" + progress + "+') AND";
         }
         return true;
     }
@@ -37,7 +37,7 @@ public class NpAppQuery extends Query {
     @Override
     protected String sqlBody(){
         return " FROM " + TABLE + ", studentBelonging as t\n" +
-        "WHERE "+ progressSql +" AND datediff(curdate(), date(applyTime)) < " + days +"\n"+
+        "WHERE "+ progressSql +" datediff(curdate(), date(applyTime)) < " + days +"\n"+
         "AND "+ TABLE +".studentID=t.ID\n";
     }
     private String getParameterOfWaitState(){
