@@ -23,7 +23,7 @@ public class DBService {
     }
 
     public boolean checkSuperAdminLogin(String id, String userpass) throws Exception {
-        String expectedPassword = dbRepo.findStudentPassByID(id);
+        String expectedPassword = dbRepo.findSuperAdminPassByID(id);
         return (Objects.equals(userpass, expectedPassword));
     }
 
@@ -33,7 +33,7 @@ public class DBService {
     }
 
     public boolean checkAdminLogin(String id, String userpass) throws Exception {
-        String expectedPassword = dbRepo.findStudentPassByID(id);
+        String expectedPassword = dbRepo.findAdminPassByID(id);
         return (Objects.equals(userpass, expectedPassword));
     }
 
@@ -158,5 +158,10 @@ public class DBService {
     public void dropStudentBelongingView() throws Exception {
         String sql = "DROP VIEW studentBelonging";
         dbRepo.execute(sql);
+    }
+
+    public boolean updateEntryApplication(String newType, String applicationID) throws SQLException {
+        String sql = "update EntryApplication set progress=" + newType+" where ID=" + applicationID;
+        return dbRepo.execute(sql);
     }
 }

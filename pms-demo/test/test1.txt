@@ -1,7 +1,19 @@
-login -t "s" -u "19307090001"
-12345
-show-entry-app -d "5" -u
-show-entry-app -d "5"
+login -t "sa" -u "1"
 show-stay-oos -u
 show-stay-oos
-
+show-always-is -d "5"
+show-entry-perm
+show-exact-report -d "5"
+show-health-report -d "5"
+show-leave-is
+show-most-entry-app -n "2" -r u
+show-most-entry-app -n "2" -r d -id "2"
+show-most-ios-campus
+show-np-entry-app -d "2"
+show-np-entry-app -d "2" -u
+show-np-leave-app -d "2"
+show-np-leave-app -d "2" -u
+show-oos
+show-stay-oos
+show-oos -u
+show-stay-oos -u

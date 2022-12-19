@@ -1,6 +1,7 @@
 import Controller.CommandDealer;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.util.Objects;
@@ -16,6 +17,7 @@ public class Main {
         System.out.println("Welcome to Permission Management System!");
         cd = new CommandDealer();
         // deal with command
+        /*
         while(true){
             System.out.println("Please enter your command!");
             Scanner input = new Scanner(System.in);
@@ -26,5 +28,19 @@ public class Main {
             cd.executeCommand(command);
         }
         System.out.println("Bye!");
+        */
+        runFromFile("pms-demo/test/test1.txt");
+    }
+
+    public static void runFromFile(String fileName) throws Exception {
+        FileReader fr = new FileReader(fileName);
+        BufferedReader br = new BufferedReader(fr);
+        String command = "";
+        while((command=br.readLine())!=null){
+            System.out.println(command);
+            cd.executeCommand(command);
+        }
+        br.close();
+        fr.close();
     }
 }
