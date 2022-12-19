@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 public class DBService {
@@ -15,7 +16,6 @@ public class DBService {
     public DBService() throws Exception {
         this.dbRepo = new DBRepo();
     }
-
     public boolean checkStudentLogin(String id, String userpass) throws Exception {
         String sql = "";
         String expectedPassword = dbRepo.findStudentPassByID(id);
@@ -37,10 +37,17 @@ public class DBService {
         return (Objects.equals(userpass, expectedPassword));
     }
 
-    public boolean insertIOLog(String id, String IOTime, String IOType, String campusName) throws Exception {
-        String sql = String.format("insert into IOLog(studentID,IOTime,IOType,campusName) " +
-                "values ('%s', '%s', '%s', '%s')", id, IOTime, IOType, campusName);
-        return (dbRepo.insert(sql) > 0);
+    public boolean insertIOLog(String id, String IOTime, String IOType, String campusName, int perm){
+        List<String> sqls = new ArrayList<String>();
+        sqls.add(String.format("insert into IOLog(studentID,IOTime,IOType,campusName) " +
+                "values ('%s', '%s', '%s', '%s')", id, IOTime, IOType, campusName));
+        sqls.add(String.format("UPDATE student SET entry-perm=%d WHERE ID=%s",perm, id));
+        try{
+            dbRepo.executeTransaction(sqls);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 
     public int insert(String sql) throws Exception {

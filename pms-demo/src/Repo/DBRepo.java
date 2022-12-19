@@ -52,7 +52,37 @@ public class DBRepo {
         String userpass = rs.getString(1);
         return userpass;
     }
-
+    public static boolean executeTransaction(List<String> sqls) throws  Exception{
+        Statement stmt = conn.createStatement();
+        boolean success = true;
+        int influence = 0;
+        try {
+            conn.setAutoCommit(false); // close auto commit to begin transaction
+            for(String sql:sqls){
+                stmt.execute(sql);
+                success = success & (influence > 0);
+            }
+        } catch (Exception e1){
+            System.out.println("IO Failed!");
+            try {
+                conn.rollback();
+            }catch (Exception e2) {
+                System.out.println("Execute Transaction: Rollback Failed!");
+            }
+        }finally {
+            if(!success){
+                try {
+                    conn.rollback();
+                }catch (Exception e2) {
+                    System.out.println("Execute Transaction: Rollback Failed!");
+                }
+            }else{
+                conn.commit();
+            }
+            conn.setAutoCommit(true);
+            return success;
+        }
+    }
     public int insert(String sql) throws Exception{
         Statement stmt = conn.createStatement();
         System.out.println(sql);

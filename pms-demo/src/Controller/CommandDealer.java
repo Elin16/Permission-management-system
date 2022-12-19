@@ -122,11 +122,11 @@ public class CommandDealer {
             System.out.println("Print: System failed! Please try again!");
         }
     }
-    private void dealIO(String ioType, String command){
+    private void dealIO(String ioType, String command, int perm){
         String IOTime = cp.getParameter(command, "-t");
         String campusName = cp.getParameter(command, "-c");
         try{
-            dbs.insertIOLog(currentID, IOTime, ioType, campusName);
+            dbs.insertIOLog(currentID, IOTime, ioType, campusName, perm);
         }catch(Exception e){
             System.out.println("System failed! Please try again!");
         }
@@ -168,10 +168,10 @@ public class CommandDealer {
         }
         switch(splitCommand[0]) {
             case "i": // go in school
-                dealIO("in", command);
+                dealIO("in", command, 1);
                 break;
             case "o": // go out of school
-                dealIO("out", command);
+                dealIO("out", command, 0);
                 break;
             default:
                 return false;
