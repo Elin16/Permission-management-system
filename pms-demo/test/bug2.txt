@@ -1,0 +1,16 @@
+// no permission
+show-most-entry-app -n "2" -r u
+You are not authority to access this!
+show-most-entry-app -n "2" -r d -id "2"
+You are not authority to access this!
+
+// empty where "" and
+show-np-entry-app -d "2"
+Print: System failed! Please try again!
+SELECT *
+ FROM entryApplication, studentBelonging as t
+WHERE  AND datediff(curdate(), date(applyTime)) < 2
+AND entryApplication.studentID=t.ID
+
+// too long table
+show-always-is -d "5"

@@ -28,7 +28,7 @@ public class OosQuery extends Query{
     //Major Query
     @Override
     protected String sqlBody(){
-        return  "FROM student, studentBelongying AS t\n" +
+        return  "FROM student, studentBelonging AS t\n" +
                 "WHERE student.ID = t.ID " +
                 "AND student.inSchool=0\n";
     }

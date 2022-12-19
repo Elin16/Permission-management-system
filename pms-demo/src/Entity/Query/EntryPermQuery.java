@@ -20,7 +20,7 @@ public class EntryPermQuery extends Query{
     }
     @Override
     protected String sqlHeader(){
-        return  "SELECT student.ID, student.perm\n";
+        return  "SELECT student.ID, student.entryPerm\n";
     }
     //Major Query
     @Override
