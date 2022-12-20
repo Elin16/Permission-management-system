@@ -59,10 +59,11 @@ public class DBRepo {
         try {
             conn.setAutoCommit(false); // close auto commit to begin transaction
             for(String sql:sqls){
-                stmt.execute(sql);
+                influence = stmt.executeUpdate(sql);
                 success = success & (influence > 0);
             }
         } catch (Exception e1){
+            success = false;
             System.out.println("IO Failed!");
             try {
                 conn.rollback();
@@ -80,8 +81,8 @@ public class DBRepo {
                 conn.commit();
             }
             conn.setAutoCommit(true);
-            return success;
         }
+        return success;
     }
     public int insert(String sql) throws Exception{
         Statement stmt = conn.createStatement();

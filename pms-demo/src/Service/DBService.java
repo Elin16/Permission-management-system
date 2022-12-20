@@ -41,7 +41,7 @@ public class DBService {
         List<String> sqls = new ArrayList<String>();
         sqls.add(String.format("insert into IOLog(studentID,IOTime,IOType,campusName) " +
                 "values ('%s', '%s', '%s', '%s')", id, IOTime, IOType, campusName));
-        sqls.add(String.format("UPDATE student SET entry-perm=%d WHERE ID=%s",perm, id));
+        sqls.add(String.format("UPDATE student SET inSchool=%d WHERE ID=%s",perm, id));
         try{
             dbRepo.executeTransaction(sqls);
             return true;

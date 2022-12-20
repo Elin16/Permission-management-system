@@ -127,6 +127,7 @@ public class CommandDealer {
         String campusName = cp.getParameter(command, "-c");
         try{
             dbs.insertIOLog(currentID, IOTime, ioType, campusName, perm);
+            System.out.println("Clock success!");
         }catch(Exception e){
             System.out.println("System failed! Please try again!");
         }
