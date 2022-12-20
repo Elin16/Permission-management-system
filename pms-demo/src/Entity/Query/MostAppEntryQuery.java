@@ -41,21 +41,23 @@ public class MostAppEntryQuery extends Query{
     @Override
     protected String sqlBody(){
         return  "FROM(\n" +
-                "   SELECT s.*, count(app.ID) AS applicationAmount\n" +
+                "   SELECT s.*, COUNT(app.ID) AS amount\n" +
                 "   FROM studentBelonging AS s, entryApplication AS app\n" +
                 "   WHERE s.ID=app.studentID\n" +
                 "   GROUP BY s.ID\n" +
-                "   ORDER BY applicationAmount DESC\n" +
-                "   LIMIT 0,2) AS t \n" +
+                "   ) AS t \n" +
                 "WHERE t.ID=t.ID\n";
     }
-
+    protected String topNAmount(String number){
+        return "   ORDER BY amount DESC\n" +
+                "  LIMIT 0,"+number+"\n";
+    }
     @Override
     public String generateSQL(String uId, String classId, String dptId){
             if(range.equals("")){
-                return sqlHeader() + sqlBody() + sqlTail(uId, classId, dptId);
+                return sqlHeader() + sqlBody() + sqlTail(uId, classId, dptId) + topNAmount(number);
             }else{
-                return sqlHeader() + sqlBody() + sqlTailWithRangeSetter(range, queryID);
+                return sqlHeader() + sqlBody() + sqlTailWithRangeSetter(range, queryID) + topNAmount(number);
             }
     }
 }

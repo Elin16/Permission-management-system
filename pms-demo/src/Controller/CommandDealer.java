@@ -46,6 +46,7 @@ public class CommandDealer {
         String id = "";
         String password = "";
         Scanner input = new Scanner(System.in);
+        boolean success = false;
         switch(type){
             case "s" :
                 id = cp.getParameter(command, "-u");
@@ -58,6 +59,7 @@ public class CommandDealer {
                     uDepartment = dbs.getStudentDepartment(id);
                     fs = new FormSubmitter(currentID);
                     System.out.println("Log in success! Your ID is " + id);
+                    success = true;
                 }
                 break;
             case "t" :
@@ -70,6 +72,7 @@ public class CommandDealer {
                     uClass = dbs.getTutorClass(id);
                     uDepartment = dbs.getTutorDepartment(id);
                     System.out.println("Log in success! Your ID is " + id);
+                    success = true;
                 }
                 break;
             case "a" :
@@ -81,6 +84,7 @@ public class CommandDealer {
                     currentID = id;
                     uDepartment = dbs.getAdminDepartment(id);
                     System.out.println("Log in success! Your ID is " + id);
+                    success = true;
                 }
                 break;
             case "sa" :
@@ -91,11 +95,15 @@ public class CommandDealer {
                     userType = usertype.SUPER_USER;
                     currentID = id;
                     System.out.println("Log in success! Your ID is " + id);
+                    success = true;
                 }
                 break;
             default:
                 System.out.println("Wrong user type! Invalid command.");
                 break;
+        }
+        if(!success){
+            System.out.println("Wrong password or user ID!");
         }
     }
     private void dealForm(Form f){
@@ -135,31 +143,36 @@ public class CommandDealer {
     private boolean isStudent(){
         return userType == usertype.STUDENT;
     }
+
     public void executeCommand(String command) throws Exception {
         String[] splitCommand = command.split(" ");
-        boolean find_command = true;
-        switch(splitCommand[0]){
-            case "login" :
-                if(userType == usertype.LOGOUT){
-                    //query user class(if exists) and department
-                    //save classID and departmentID
-                    //if class not exists, set classID=""
-                    login(command);
-                } else {
-                    System.out.println("You have already log in!");
-                }
-                break;
-            case "logout" :
-                userType = usertype.LOGOUT;
-                currentID = "";
-                break;
-            default:
-                find_command = false;
-                break;
+
+        if(splitCommand[0].equals("login")){
+            if(isLogout()){
+                login(command);
+            } else {
+                System.out.println("You have already log in!");
+            }
+            return;
         }
-        if(find_command||checkQueryCommand(command)||checkIOCommand(command)||checkFormCommand(command))
+
+        if(isLogout()) {
+            System.out.println("You should login first!");
+            return;
+        }
+
+        if(splitCommand[0].equals("logout")){
+            userType = usertype.LOGOUT;
+            currentID = "";
+            return;
+        }
+        if(checkQueryCommand(command)||checkIOCommand(command)||checkFormCommand(command))
             return;
         System.out.println("Command not exist!");
+    }
+
+    private boolean isLogout() {
+        return userType == usertype.LOGOUT;
     }
 
     private boolean checkIOCommand(String command){
