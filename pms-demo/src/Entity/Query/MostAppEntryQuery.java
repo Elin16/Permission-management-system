@@ -35,7 +35,7 @@ public class MostAppEntryQuery extends Query{
     }
     public boolean hasPerm(usertype uType){
         userType = uType;
-        return (!isStudent()) && hasPermWithRangeSetter(range);
+        return (isTeacher()) && hasPermWithRangeSetter(range);
     }
     //todo: multiple range should check the user's permission
     @Override

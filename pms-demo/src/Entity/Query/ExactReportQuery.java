@@ -43,7 +43,7 @@ public class ExactReportQuery extends Query{
                 "                 WHERE datediff(current_date, h.reportDate) < "+ days + "\n" +
                 "                 GROUP BY h.studentID\n" +
                 "                ) AS c\n" +
-                "                WHERE timediff(c.maxT, c.minT) < '00:01:00')\n";
+                "                WHERE c.maxT-'00:01:00' < c.minT)\n";
     }
 
 }

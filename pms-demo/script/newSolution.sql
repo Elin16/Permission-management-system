@@ -97,12 +97,12 @@ WHERE ID IN(
              WHERE IOType='out'
              GROUP BY studentID
          ) AS outOfSchool
-    WHERE timediff(current_timestamp, lastOut) > '24:00:00'
+    WHERE current_timestamp-'24:00:00' > lastOut
 )
   AND ID IN (
     (SELECT ID
      FROM student
-     WHERE entryPerm > 0 AND ID NOT IN(
+     WHERE entryPerm > 0 AND inschool=0 AND ID NOT IN(
          SELECT ID
          FROM leaveApplication
          WHERE progress='submitted' OR progress='approved' OR progress='success'
@@ -150,7 +150,7 @@ WHERE t.ID IN
                  where datediff(current_date, h.reportDate) < 10
                  group by h.studentID
                 ) as c
-                where timediff(c.maxT, c.minT) < '00:01:00');
+                where c.maxT-'00:01:00' < c.minT );
 
 
 # 2.9

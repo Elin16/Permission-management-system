@@ -50,9 +50,8 @@ public class AlwaysIsQuery extends Query{
     //Major Query
     @Override
     protected String sqlBody(){
-        return "(SELECT student.ID, student.name, b.classId, b.dptId" +
-                "FROM " +
-                "(studentBelonging AS b, student AS s\n" +
+        return "FROM (SELECT s.ID, s.name, b.classId, b.dptId\n" +
+                "FROM studentBelonging AS b, student AS s\n" +
                 "WHERE b.ID=s.ID\n" +
                 "AND b.ID IN (\n" +
                 "    SELECT studentID\n" +
@@ -62,8 +61,8 @@ public class AlwaysIsQuery extends Query{
                 "             WHERE IOType='in'\n" +
                 "             GROUP BY studentID\n" +
                 "         ) AS lastInRecord\n" +
-                "    WHERE datediff(current_date, DATE(lastIn) ) > +" + days + "\n" +
-                ") AND s.inschool=1)" +
+                "    WHERE datediff(current_date, DATE(lastIn) ) > " + days + "\n" +
+                "AND s.inschool=1)" +
                 ")AS t\n";
     }
     @Override

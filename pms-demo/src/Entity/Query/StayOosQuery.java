@@ -32,12 +32,12 @@ public class StayOosQuery extends Query{
                 "             WHERE IOType='out'\n" +
                 "             GROUP BY studentID\n" +
                 "         ) AS outOfSchool\n" +
-                "    WHERE timediff(current_timestamp, lastOut) > '24:00:00'\n" +
+                "    WHERE current_timestamp-'24:00:00' > lastOut\n" +
                 ")\n" +
                 "  AND ID IN (\n" +
                 "    (SELECT ID\n" +
                 "     FROM student\n" +
-                "     WHERE entryPerm > 0 AND ID NOT IN(\n" +
+                "     WHERE entryPerm > 0 AND inschool=0 AND ID NOT IN(\n" +
                 "         SELECT ID\n" +
                 "         FROM leaveApplication\n" +
                 "         WHERE progress='submitted' OR progress='approved' OR progress='success'\n" +

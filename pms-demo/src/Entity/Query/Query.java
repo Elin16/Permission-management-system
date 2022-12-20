@@ -135,6 +135,8 @@ public class Query {
         return (userType == usertype.SUPER_USER);
     }
     protected boolean hasPermWithRangeSetter(String range){
+        System.out.printf("perm. range is %s%n", range);
+        System.out.println(String.valueOf(userType));
         if(range.equals(""))
             return true;
         if(range.equals("u") || range.equals("d"))
