@@ -168,14 +168,122 @@ FROM(
      ) AS ranked
 WHERE ranked.io_rank=1;
 
+# out of school total time
+SELECT studentID, dateDiff(date(ins), date(oos)) + dateDiff(firstIsIn*(curdate()-365), lastIsOut*curdate())
+FROM (
+    SELECT studentID, SUM(IOTime) as ins
+    FROM IOLog
+    WHERE datediff(curdate(),date(IOtime)) < 365 AND IOType='in'
+    GROUP BY studentID
+         ) as a,
+     (
+         SELECT studentID, SUM(IOTime) as oos
+         FROM IOLog
+         WHERE datediff(curdate(),date(IOtime)) < 365  AND IOType='out'
+         GROUP BY studentID
+     ) as b,
+     studentBelonging as t,
+     # c d 表只能确定至少有一条in和out的学生的记录
+     # 只有一条in/out的学生怎么办呢
+     # 只有in：in - year begin
+     # 只有out：out - year end
+
+     (
+
+         # 考虑minIn不存在，即没有出校记录，这部分学生就不存在c1表里了
+        SELECT studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
+        FROM (
+                 SELECT studentID, MIN(IOTime) as minInTime
+                 FROM IOLog
+                 WHERE IOType='in'
+                 GROUP BY studentID
+        ) as c1,
+             (
+                 SELECT studentID, MIN(IOTime) as minOutTime
+                 FROM IOLog
+                 WHERE IOType='out'
+                 GROUP BY studentID
+             ) as c2
+        WHERE c1.studentID=c2.studentID
+    ) as c,
+     (
+         # 考虑maxOut不存在，即没有入校记录，这部分学生就不存在d2表里了
+         SELECT studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
+         FROM (
+                  SELECT studentID, MAX(IOTime) as maxInTime
+                  FROM IOLog
+                  WHERE IOType='in'
+                  GROUP BY studentID
+              ) as d1,
+              (
+                  SELECT studentID, MIN(IOTime) as maxOutTime
+                  FROM IOLog
+                  WHERE IOType='out'
+                  GROUP BY studentID
+              ) as d2
+         WHERE d1.studentID=d2.studentID
+     ) as d
+WHERE a.studentID = t.ID and b.studentID = t.ID and c.studentID = t.ID and d.studentID = t.ID
 
 
+# 使用分窗函数，难点依然是只有一条IO怎么办
+#
 
-
-
-
-
-
+SELECT studentID, dateDiff(date(ins), date(oos)) + dateDiff((firstIsIn||c.firstIsIn=NULL)*(curdate()-365), (lastIsOut||lastIsOut=NULL)*curdate())
+FROM (
+         SELECT studentID, SUM(IOTime) as ins
+         FROM IOLog
+         WHERE datediff(curdate(),date(IOtime)) < 365 AND IOType='in'
+         GROUP BY studentID
+     ) as a,
+     (
+         SELECT studentID, SUM(IOTime) as oos
+         FROM IOLog
+         WHERE datediff(curdate(),date(IOtime)) < 365  AND IOType='out'
+         GROUP BY studentID
+     ) as b,
+     studentBelonging as t
+        left join
+     # c d 表只能确定至少有一条in和out的学生的记录
+     # 只有一条in/out的学生怎么办呢
+     # 只有in：in - year begin
+     # 只有out：out - year end
+     (
+         # 考虑minIn不存在，即没有出校记录，这部分学生就不存在c1表里了
+         SELECT studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
+         FROM (
+                  SELECT studentID, MIN(IOTime) as minInTime
+                  FROM IOLog
+                  WHERE IOType='in'
+                  GROUP BY studentID
+              ) as c1,
+              (
+                  SELECT studentID, MIN(IOTime) as minOutTime
+                  FROM IOLog
+                  WHERE IOType='out'
+                  GROUP BY studentID
+              ) as c2
+         WHERE c1.studentID=c2.studentID
+     ) as c ON t.ID=c.studentID
+         left join
+     (
+         # 考虑maxOut不存在，即没有入校记录，这部分学生就不存在d2表里了
+         SELECT studentID, (TIMEDIFF(maxInTime,maxOutTime) < 0) as LastIsOut
+         FROM (
+                  SELECT studentID, MAX(IOTime) as maxInTime
+                  FROM IOLog
+                  WHERE IOType='in'
+                  GROUP BY studentID
+              ) as d1,
+              (
+                  SELECT studentID, MIN(IOTime) as maxOutTime
+                  FROM IOLog
+                  WHERE IOType='out'
+                  GROUP BY studentID
+              ) as d2
+         WHERE d1.studentID=d2.studentID
+     ) as d ON t.ID=d.studentID
+WHERE a.studentID = t.ID and b.studentID = t.ID
 
 
 
