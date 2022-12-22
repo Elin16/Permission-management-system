@@ -1,4 +1,8 @@
-Connection established. The connection iscom.mysql.cj.jdbc.ConnectionImpl@7ae42ce3
+/home/fudan/.jdks/corretto-11.0.14.1/bin/java -javaagent:/snap/intellij-idea-ultimate/398/lib/idea_rt.jar=42691:/snap/intellij-idea-ultimate/398/bin -Dfile.encoding=UTF-8 -classpath /home/fudan/Desktop/database/PJtest/pms/out/production/pms-demo:/home/fudan/Desktop/database/PJtest/pms/pms-demo/lib/json-simple-1.1.1.jar:/home/fudan/Desktop/database/PJtest/pms/pms-demo/lib/druid-1.2.9.jar:/home/fudan/Desktop/database/PJtest/pms/pms-demo/lib/commons-lang3-3.12.0.jar:/home/fudan/Desktop/database/PJtest/pms/pms-demo/lib/mysql-connector-j-8.0.31.jar:/home/fudan/Desktop/database/PJtest/pms/pms-demo/lib/opencsv-5.7.0.jar Main
+Welcome to Permission Management System!
+Dec 20, 2022 10:17:15 PM com.alibaba.druid.pool.DruidDataSource info
+INFO: {dataSource-1} inited
+Connection established. The connection iscom.mysql.cj.jdbc.ConnectionImpl@4f5991f6
 login -t "sa" -u "1"
 Please enter your password:
 001
@@ -7,7 +11,6 @@ show-stay-oos -u
 +-----------+-------+-----+
 |         ID|classID|dptID|
 +-----------+-------+-----+
-|19307090001|      1|    1|
 |19307090003|      3|    2|
 +-----------+-------+-----+
 SELECT *
@@ -20,12 +23,12 @@ WHERE ID IN(
              WHERE IOType='out'
              GROUP BY studentID
          ) AS outOfSchool
-    WHERE timediff(current_timestamp, lastOut) > '24:00:00'
+    WHERE current_timestamp-'24:00:00' > lastOut
 )
   AND ID IN (
     (SELECT ID
      FROM student
-     WHERE entryPerm > 0 AND ID NOT IN(
+     WHERE entryPerm > 0 AND inschool=0 AND ID NOT IN(
          SELECT ID
          FROM leaveApplication
          WHERE progress='submitted' OR progress='approved' OR progress='success'
@@ -38,7 +41,6 @@ show-stay-oos
 +-----------+-------+-----+
 |         ID|classID|dptID|
 +-----------+-------+-----+
-|19307090001|      1|    1|
 |19307090003|      3|    2|
 +-----------+-------+-----+
 SELECT *
@@ -51,12 +53,12 @@ WHERE ID IN(
              WHERE IOType='out'
              GROUP BY studentID
          ) AS outOfSchool
-    WHERE timediff(current_timestamp, lastOut) > '24:00:00'
+    WHERE current_timestamp-'24:00:00' > lastOut
 )
   AND ID IN (
     (SELECT ID
      FROM student
-     WHERE entryPerm > 0 AND ID NOT IN(
+     WHERE entryPerm > 0 AND inschool=0 AND ID NOT IN(
          SELECT ID
          FROM leaveApplication
          WHERE progress='submitted' OR progress='approved' OR progress='success'
@@ -66,27 +68,48 @@ WHERE ID IN(
 
 
 show-always-is -d "5"
-You are not authority to access this!
-show-entry-perm
-+-----------+------------+--------+---------+--------+-------+-----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
-|         ID|        name|userpass|entryPerm|inSchool|classID|                  email|    domitory|telephoneNum|  homeAddress|  indentityType|      indentityNum|liveIn|         ID|classID|dptID|
-+-----------+------------+--------+---------+--------+-------+-----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
-|19307090001|   Li Huahua|   12345|        1|       1|      1|  lihuahua@fudan.edu.cn|south37#1001|   123456789|tangchen1#101|Citizen ID Card|332522200001010001|     H|19307090001|      1|    1|
-|19307090002|Zhao Xiaohua|   12345|        1|       1|      1| lixiaohua@fudan.edu.cn|south37#1002|   123456780|tangchen1#102|Citizen ID Card|332522200001010002|     F|19307090002|      1|    1|
-|19307090004| Zhao Miemie|   12345|        1|       1|      2|zhaomiemie@fudan.edu.cn|south37#5003|   123456780|tangchen1#104|Citizen ID Card|332522200001010004|     H|19307090004|      2|    1|
-|19307090003| Huang Yilin|   12345|        1|       0|      3| huanyilin@fudan.edu.cn|south37#5002|   123456780|tangchen1#103|Citizen ID Card|332522200001010003|     H|19307090003|      3|    2|
-+-----------+------------+--------+---------+--------+-------+-----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
+perm. range is
+SUPER_USER
++-----------+-----------+-------+-----+
+|         ID|       name|classID|dptID|
++-----------+-----------+-------+-----+
+|19307090004|Zhao Miemie|      2|    1|
++-----------+-----------+-------+-----+
 SELECT *
+FROM (SELECT s.ID, s.name, b.classId, b.dptId
+FROM studentBelonging AS b, student AS s
+WHERE b.ID=s.ID
+AND b.ID IN (
+    SELECT studentID
+    FROM (
+             SELECT studentID, max(IOTime) AS lastIn
+             FROM IOLog
+             WHERE IOType='in'
+             GROUP BY studentID
+         ) AS lastInRecord
+    WHERE datediff(current_date, DATE(lastIn) ) > 5
+AND s.inschool=1))AS t
+
+
+show-entry-perm
++-----------+---------+
+|         ID|entryPerm|
++-----------+---------+
+|19307090001|        1|
+|19307090002|        1|
+|19307090004|        1|
+|19307090003|        1|
++-----------+---------+
+SELECT student.ID, student.entryPerm
 FROM student, studentBelonging as t
 WHERE student.ID=t.ID
 
 
 show-exact-report -d "5"
-+-----------+-------+-----+
-|         ID|classID|dptID|
-+-----------+-------+-----+
-|19307090001|      1|    1|
-+-----------+-------+-----+
++--+-------+-----+
+|ID|classID|dptID|
++--+-------+-----+
++--+-------+-----+
 SELECT *
 FROM studentBelonging AS t
 WHERE t.ID IN
@@ -96,28 +119,31 @@ WHERE t.ID IN
                  WHERE datediff(current_date, h.reportDate) < 5
                  GROUP BY h.studentID
                 ) AS c
-                WHERE timediff(c.maxT, c.minT) < '00:01:00')
+                WHERE c.maxT-'00:01:00' < c.minT)
 
 
 show-health-report -d "5"
 +-----------+----------+----------+---------------+---------------+--------+-----------+-------+-----+
 |  studentID|reportDate|reportTime|bodyTemperature|     onLocation|comments|         ID|classID|dptID|
 +-----------+----------+----------+---------------+---------------+--------+-----------+-------+-----+
-|19307090001|2022-12-15|  00:00:00|           36.7|Quanzhou-Fujian| At home|19307090001|      1|    1|
 |19307090001|2022-12-16|  00:00:00|           36.7|Quanzhou-Fujian| At home|19307090001|      1|    1|
+|19307090001|2022-12-19|  00:00:00|           36.7|Quanzhou-Fujian| At home|19307090001|      1|    1|
+|19307090001|2022-12-20|  00:00:00|           36.7|Quanzhou-Fujian| At home|19307090001|      1|    1|
+|19307090003|2022-12-20|  01:00:00|           36.7|Quanzhou-Fujian| At home|19307090003|      3|    2|
 +-----------+----------+----------+---------------+---------------+--------+-----------+-------+-----+
 SELECT *
 FROM healthLog, studentBelonging as t
-WHERE (studentID='19307090001' and datediff(curdate(), reportDate) < 5)
+WHERE datediff(curdate(), reportDate) < 5
 AND t.ID=studentID
 
 
 show-leave-is
-+-----------+-------+-----+-----------+---------+--------+---------+--------+-------+---------------------+------------+------------+-------------+---------------+------------------+------+
-|         ID|classID|dptID|         ID|     name|userpass|entryPerm|inSchool|classID|                email|    domitory|telephoneNum|  homeAddress|  indentityType|      indentityNum|liveIn|
-+-----------+-------+-----+-----------+---------+--------+---------+--------+-------+---------------------+------------+------------+-------------+---------------+------------------+------+
-|19307090001|      1|    1|19307090001|Li Huahua|   12345|        1|       1|      1|lihuahua@fudan.edu.cn|south37#1001|   123456789|tangchen1#101|Citizen ID Card|332522200001010001|     H|
-+-----------+-------+-----+-----------+---------+--------+---------+--------+-------+---------------------+------------+------------+-------------+---------------+------------------+------+
++-----------+-------+-----+-----------+-----------+--------+---------+--------+-------+-----------------------+------------+------------+-------------+---------------+------------------+------+
+|         ID|classID|dptID|         ID|       name|userpass|entryPerm|inSchool|classID|                  email|    domitory|telephoneNum|  homeAddress|  indentityType|      indentityNum|liveIn|
++-----------+-------+-----+-----------+-----------+--------+---------+--------+-------+-----------------------+------------+------------+-------------+---------------+------------------+------+
+|19307090001|      1|    1|19307090001|  Li Huahua|   12345|        1|       1|      1|  lihuahua@fudan.edu.cn|south37#1001|   123456789|tangchen1#101|Citizen ID Card|332522200001010001|     H|
+|19307090004|      2|    1|19307090004|Zhao Miemie|   12345|        1|       1|      2|zhaomiemie@fudan.edu.cn|south37#5003|   123456780|tangchen1#104|Citizen ID Card|332522200001010004|     H|
++-----------+-------+-----+-----------+-----------+--------+---------+--------+-------+-----------------------+------------+------------+-------------+---------------+------------------+------+
 SELECT *
 FROM studentBelonging AS t, student AS s
 WHERE t.ID=s.ID
@@ -130,15 +156,50 @@ AND t.ID IN(
 ) AND s.inschool=1
 
 
-show-most-entry-app -n "2" -r u
-You are not authority to access this!
-show-most-entry-app -n "2" -r d -id "2"
-You are not authority to access this!
+show-most-entry-app -n "2" -r "u"
+perm. range is u
+SUPER_USER
++-----------+-------+-----+------+
+|         ID|classID|dptID|amount|
++-----------+-------+-----+------+
+|19307090001|      1|    1|     2|
+|19307090002|      1|    1|     1|
++-----------+-------+-----+------+
+SELECT *
+FROM(
+   SELECT s.*, COUNT(app.ID) AS amount
+   FROM studentBelonging AS s, entryApplication AS app
+   WHERE s.ID=app.studentID
+   GROUP BY s.ID
+   ) AS t
+WHERE t.ID=t.ID
+   ORDER BY amount DESC
+  LIMIT 0,2
+
+show-most-entry-app -n "2" -r "d" -id "2"
+perm. range is d
+SUPER_USER
++-----------+-------+-----+------+
+|         ID|classID|dptID|amount|
++-----------+-------+-----+------+
+|19307090003|      3|    2|     1|
++-----------+-------+-----+------+
+SELECT *
+FROM(
+   SELECT s.*, COUNT(app.ID) AS amount
+   FROM studentBelonging AS s, entryApplication AS app
+   WHERE s.ID=app.studentID
+   GROUP BY s.ID
+   ) AS t
+WHERE t.ID=t.ID
+AND t.dptId=2   ORDER BY amount DESC
+  LIMIT 0,2
+
 show-most-ios-campus
 +-----+----------+
 |dptID|campusName|
 +-----+----------+
-|    1|         F|
+|    1|         H|
 |    2|         H|
 +-----+----------+
 SELECT ranked.dptID, ranked.campusName
@@ -161,7 +222,7 @@ show-np-entry-app -d "2"
 +--+---------+---------+-----------------+---------------+------+--------+-----------+--+-------+-----+
 SELECT *
  FROM entryApplication, studentBelonging as t
-WHERE + null AND datediff(curdate(), date(applyTime)) < 2
+WHERE  datediff(curdate(), date(applyTime)) < 2
 AND entryApplication.studentID=t.ID
 
 
@@ -172,51 +233,49 @@ show-np-entry-app -d "2" -u
 +--+---------+---------+-----------------+---------------+------+--------+-----------+--+-------+-----+
 SELECT *
  FROM entryApplication, studentBelonging as t
-WHERE + null AND datediff(curdate(), date(applyTime)) < 2
+WHERE  datediff(curdate(), date(applyTime)) < 2
 AND entryApplication.studentID=t.ID
 
 
 show-np-leave-app -d "2"
-+--+---------+---------+---------------+----------------+------+--------+-----------+-----------+--+-------+-----+
-|ID|studentID|applyTime|expectLeaveTime|expectReturnTime|reason|progress|destination|refuseReson|ID|classID|dptID|
-+--+---------+---------+---------------+----------------+------+--------+-----------+-----------+--+-------+-----+
-+--+---------+---------+---------------+----------------+------+--------+-----------+-----------+--+-------+-----+
++--+-----------+-------------------+-------------------+-------------------+------------+---------+---------------+-----------+-----------+-------+-----+
+|ID|  studentID|          applyTime|    expectLeaveTime|   expectReturnTime|      reason| progress|    destination|refuseReson|         ID|classID|dptID|
++--+-----------+-------------------+-------------------+-------------------+------------+---------+---------------+-----------+-----------+-------+-----+
+| 3|19307090004|2022-12-19 22:00:00|2022-12-19 23:32:09|2022-12-18 08:00:00|Go back home|submitted|Quanzhou Fujian|       null|19307090004|      2|    1|
++--+-----------+-------------------+-------------------+-------------------+------------+---------+---------------+-----------+-----------+-------+-----+
 SELECT *
  FROM leaveApplication, studentBelonging as t
-WHERE + null AND datediff(curdate(), date(applyTime)) < 2
+WHERE  datediff(curdate(), date(applyTime)) < 2
 AND leaveApplication.studentID=t.ID
 
 
 show-np-leave-app -d "2" -u
-+--+---------+---------+---------------+----------------+------+--------+-----------+-----------+--+-------+-----+
-|ID|studentID|applyTime|expectLeaveTime|expectReturnTime|reason|progress|destination|refuseReson|ID|classID|dptID|
-+--+---------+---------+---------------+----------------+------+--------+-----------+-----------+--+-------+-----+
-+--+---------+---------+---------------+----------------+------+--------+-----------+-----------+--+-------+-----+
++--+-----------+-------------------+-------------------+-------------------+------------+---------+---------------+-----------+-----------+-------+-----+
+|ID|  studentID|          applyTime|    expectLeaveTime|   expectReturnTime|      reason| progress|    destination|refuseReson|         ID|classID|dptID|
++--+-----------+-------------------+-------------------+-------------------+------------+---------+---------------+-----------+-----------+-------+-----+
+| 3|19307090004|2022-12-19 22:00:00|2022-12-19 23:32:09|2022-12-18 08:00:00|Go back home|submitted|Quanzhou Fujian|       null|19307090004|      2|    1|
++--+-----------+-------------------+-------------------+-------------------+------------+---------+---------------+-----------+-----------+-------+-----+
 SELECT *
  FROM leaveApplication, studentBelonging as t
-WHERE + null AND datediff(curdate(), date(applyTime)) < 2
+WHERE  datediff(curdate(), date(applyTime)) < 2
 AND leaveApplication.studentID=t.ID
 
 
 show-oos
-+-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----+-------------------+
-|         ID|       name|userpass|entryPerm|inSchool|classID|                 email|    domitory|telephoneNum|  homeAddress|  indentityType|      indentityNum|liveIn|dptID|        max(IOTime)|
-+-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----+-------------------+
-|19307090003|Huang Yilin|   12345|        1|       0|      3|huanyilin@fudan.edu.cn|south37#5002|   123456780|tangchen1#103|Citizen ID Card|332522200001010003|     H|    2|2022-12-15 23:00:00|
-+-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----+-------------------+
++-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
+|         ID|       name|userpass|entryPerm|inSchool|classID|                 email|    domitory|telephoneNum|  homeAddress|  indentityType|      indentityNum|liveIn|         ID|classID|dptID|
++-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
+|19307090003|Huang Yilin|   12345|        1|       0|      3|huanyilin@fudan.edu.cn|south37#5002|   123456780|tangchen1#103|Citizen ID Card|332522200001010003|     H|19307090003|      3|    2|
++-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
 SELECT *
-from (select s.*, b.dptID, max(IOTime)
-from studentBelonging as b, student as s, IOLog as io
-where b.ID=s.ID and s.ID=io.studentID and inschool=0
-group by b.ID) as t
-where t.ID = t.ID
+FROM student, studentBelonging AS t
+WHERE student.ID = t.ID AND student.inSchool=0
 
 
 show-stay-oos
 +-----------+-------+-----+
 |         ID|classID|dptID|
 +-----------+-------+-----+
-|19307090001|      1|    1|
 |19307090003|      3|    2|
 +-----------+-------+-----+
 SELECT *
@@ -229,12 +288,12 @@ WHERE ID IN(
              WHERE IOType='out'
              GROUP BY studentID
          ) AS outOfSchool
-    WHERE timediff(current_timestamp, lastOut) > '24:00:00'
+    WHERE current_timestamp-'24:00:00' > lastOut
 )
   AND ID IN (
     (SELECT ID
      FROM student
-     WHERE entryPerm > 0 AND ID NOT IN(
+     WHERE entryPerm > 0 AND inschool=0 AND ID NOT IN(
          SELECT ID
          FROM leaveApplication
          WHERE progress='submitted' OR progress='approved' OR progress='success'
@@ -244,13 +303,13 @@ WHERE ID IN(
 
 
 show-oos -u
-+-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----+-------------------+
-|         ID|       name|userpass|entryPerm|inSchool|classID|                 email|    domitory|telephoneNum|  homeAddress|  indentityType|      indentityNum|liveIn|dptID|        max(IOTime)|
-+-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----+-------------------+
-|19307090003|Huang Yilin|   12345|        1|       0|      3|huanyilin@fudan.edu.cn|south37#5002|   123456780|tangchen1#103|Citizen ID Card|332522200001010003|     H|    2|2022-12-15 23:00:00|
-+-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----+-------------------+
++-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
+|         ID|       name|userpass|entryPerm|inSchool|classID|                 email|    domitory|telephoneNum|  homeAddress|  indentityType|      indentityNum|liveIn|         ID|classID|dptID|
++-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
+|19307090003|Huang Yilin|   12345|        1|       0|      3|huanyilin@fudan.edu.cn|south37#5002|   123456780|tangchen1#103|Citizen ID Card|332522200001010003|     H|19307090003|      3|    2|
++-----------+-----------+--------+---------+--------+-------+----------------------+------------+------------+-------------+---------------+------------------+------+-----------+-------+-----+
 SELECT *
-FROM student, studentBelongying AS t
+FROM student, studentBelonging AS t
 WHERE student.ID = t.ID AND student.inSchool=0
 
 
@@ -258,7 +317,6 @@ show-stay-oos -u
 +-----------+-------+-----+
 |         ID|classID|dptID|
 +-----------+-------+-----+
-|19307090001|      1|    1|
 |19307090003|      3|    2|
 +-----------+-------+-----+
 SELECT *
@@ -271,17 +329,19 @@ WHERE ID IN(
              WHERE IOType='out'
              GROUP BY studentID
          ) AS outOfSchool
-    WHERE timediff(current_timestamp, lastOut) > '24:00:00'
+    WHERE current_timestamp-'24:00:00' > lastOut
 )
   AND ID IN (
     (SELECT ID
      FROM student
-     WHERE entryPerm > 0 AND ID NOT IN(
+     WHERE entryPerm > 0 AND inschool=0 AND ID NOT IN(
          SELECT ID
          FROM leaveApplication
          WHERE progress='submitted' OR progress='approved' OR progress='success'
      )
     )
 )
+
+
 
 Process finished with exit code 0
