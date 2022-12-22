@@ -229,25 +229,23 @@ WHERE a.studentID = t.ID and b.studentID = t.ID and c.studentID = t.ID and d.stu
 # 使用分窗函数，难点依然是只有一条IO怎么办
 #
 
-SELECT studentID, dateDiff(date(ins), date(oos)) + dateDiff((firstIsIn||c.firstIsIn=NULL)*(curdate()-365), (lastIsOut||lastIsOut=NULL)*curdate())
-FROM (
+SELECT studentID, (1-isnull(ins))*ins, (1-isnull(oos))*oos, dateDiff((isnull(c.firstIsIn)||c.firstIsIn>0)*(curdate()-365), (isnull(lastIsOut)||d.lastIsOut>0)*curdate()) as fistLast
+FROM  studentBelonging as t
+          left join
+    (
          SELECT studentID, SUM(IOTime) as ins
          FROM IOLog
          WHERE datediff(curdate(),date(IOtime)) < 365 AND IOType='in'
          GROUP BY studentID
-     ) as a,
+     ) as a on t.ID=a.studentID
+         left join
      (
          SELECT studentID, SUM(IOTime) as oos
          FROM IOLog
          WHERE datediff(curdate(),date(IOtime)) < 365  AND IOType='out'
          GROUP BY studentID
-     ) as b,
-     studentBelonging as t
+     ) as b on t.ID=b.studentID
         left join
-     # c d 表只能确定至少有一条in和out的学生的记录
-     # 只有一条in/out的学生怎么办呢
-     # 只有in：in - year begin
-     # 只有out：out - year end
      (
          # 考虑minIn不存在，即没有出校记录，这部分学生就不存在c1表里了
          SELECT studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
@@ -283,8 +281,6 @@ FROM (
               ) as d2
          WHERE d1.studentID=d2.studentID
      ) as d ON t.ID=d.studentID
-WHERE a.studentID = t.ID and b.studentID = t.ID
-
 
 
 
