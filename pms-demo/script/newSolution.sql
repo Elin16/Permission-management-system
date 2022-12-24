@@ -36,11 +36,12 @@ where b.ID=a.studentID
 
 # 2.1
 # submitted entryApplication/leaveApplication in last n days
-select b.*, a.*
-from studentBelonging as b, entryApplication as a
-where b.ID=a.studentID
+select b.*, a.*, h.*
+from studentBelonging as b, entryApplication as a, healthLog as h
+where b.ID=a.studentID and b.id=h.studentID
   and progress='submitted'
-  and datediff(curdate(), date(applyTime)) < 5;
+  and datediff(curdate(), date(applyTime)) < 5
+  and datediff(curdate(), reportDate) < 7;
 
 select b.*, a.*
 from studentBelonging as b, leaveApplication as a
