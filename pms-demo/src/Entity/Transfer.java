@@ -1,12 +1,13 @@
-package Entity.Query;
+package Entity;
 
 import Controller.CmdMatchRes;
 import Controller.CommandParser;
 import Controller.usertype;
+import Repo.DBRepo;
 
 import java.util.regex.Pattern;
 
-public class Query {
+public class Transfer {
     protected CommandParser cp;
     protected String MY_CMD;
     protected String TABLE;
@@ -15,7 +16,8 @@ public class Query {
     protected boolean isStatistics;
     protected String currentCMD;
     protected usertype userType;
-    public Query() {
+    protected DBRepo repository;
+    public Transfer() {
     }
 
     //Check whether the command fix the MY_CMD
@@ -151,5 +153,15 @@ public class Query {
         }else if(range.equals("c")){
             return "AND t.classId=" + queryID;
         }else return "";
+    }
+    //todo
+    public int executeUpdate(String sql){
+        return repository.executeUpdate(sql);
+    }
+    public String executeQuery(String sql){
+        return "";
+    }
+    public boolean executeCMD(){
+        return false;
     }
 }

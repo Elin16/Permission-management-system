@@ -1,12 +1,13 @@
 package Entity.Query;
 
 import Controller.CommandParser;
+import Entity.Transfer;
 
 /*
 # 查询学生过去n天的每日填报信息
 $ show-health-report -d <n days>
 * */
-public class HealthReportQuery extends Query{
+public class HealthReportQuery extends Transfer {
     private String days;
     public HealthReportQuery(){
         MY_CMD = "show-health-report";

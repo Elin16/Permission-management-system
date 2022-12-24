@@ -2,14 +2,13 @@ package Entity.Query;
 
 import Controller.CommandParser;
 import Controller.usertype;
-
-import java.util.regex.Pattern;
+import Entity.Transfer;
 
 /*
 # 连续 n 天填写“健康日报”时间（精确到分钟）完全一致的学生数量，个人信息；
 $ show-exact-report -d <n days> (-u)
 * */
-public class ExactReportQuery extends Query{
+public class ExactReportQuery extends Transfer {
     private String days;
     public ExactReportQuery(){
         MY_CMD = "show-exact-report";

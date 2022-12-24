@@ -1,13 +1,12 @@
 package Entity.Query;
 
 import Controller.CommandParser;
-
-import java.util.regex.Pattern;
+import Entity.Transfer;
 
 /*
 $ show-always-is -d <n days> -r <u/dept id /class id> (-u)
 * */
-public class StayOosQuery extends Query{
+public class StayOosQuery extends Transfer {
     public StayOosQuery(){
         MY_CMD = "show-stay-oos";
         isStatistics = false;

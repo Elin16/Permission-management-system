@@ -1,7 +1,10 @@
 package Controller;
 
+import Entity.Approve.NOApprove;
+import Entity.Approve.OKApprove;
 import Entity.Form.Form;
 import Entity.Query.*;
+import Entity.Transfer;
 import Service.DBService;
 import Service.FormSubmitter;
 
@@ -17,26 +20,30 @@ public class CommandDealer {
     private DBService dbs;
     private String currentID;
     private FormSubmitter fs;
-    private List<Query> queryList;
+    private List<Transfer> cmdList;
     public CommandDealer() throws Exception {
         this.cp = new CommandParser();
         this.userType = usertype.LOGOUT;
         this.dbs = new DBService();
         this.currentID = "";
-        this.queryList = new ArrayList<>();
-        queryList.add(new AppQuery("show-entry-app","entryApplication"));
-        queryList.add(new AppQuery("show-leave-app","leaveApplication"));
-        queryList.add(new NpAppQuery("show-np-entry-app","entryApplication"));
-        queryList.add(new NpAppQuery("show-np-leave-app","leaveApplication"));
-        queryList.add(new AlwaysIsQuery());
-        queryList.add(new EntryPermQuery());
-        queryList.add(new ExactReportQuery());
-        queryList.add(new HealthReportQuery());
-        queryList.add(new LeaveIsQuery());
-        queryList.add(new MostAppEntryQuery());
-        queryList.add(new MostIOQuery());
-        queryList.add(new OosQuery());
-        queryList.add(new StayOosQuery());
+        this.cmdList = new ArrayList<>();
+        cmdList.add(new AppQuery("show-entry-app","entryApplication"));
+        cmdList.add(new AppQuery("show-leave-app","leaveApplication"));
+        cmdList.add(new NpAppQuery("show-np-entry-app","entryApplication"));
+        cmdList.add(new NpAppQuery("show-np-leave-app","leaveApplication"));
+        cmdList.add(new AlwaysIsQuery());
+        cmdList.add(new EntryPermQuery());
+        cmdList.add(new ExactReportQuery());
+        cmdList.add(new HealthReportQuery());
+        cmdList.add(new LeaveIsQuery());
+        cmdList.add(new MostAppEntryQuery());
+        cmdList.add(new MostIOQuery());
+        cmdList.add(new OosQuery());
+        cmdList.add(new StayOosQuery());
+        cmdList.add(new NOApprove("NO-entry","entryApplication"));
+        cmdList.add(new NOApprove("NO-leave","leaveApplication"));
+        cmdList.add(new OKApprove("OK-entry","entryApplication"));
+        cmdList.add(new OKApprove("OK-leave","leaveApplication"));
         this.dbs.dropStudentBelongingView();
         this.dbs.createStudentBelongingView();
     }
@@ -166,7 +173,7 @@ public class CommandDealer {
             currentID = "";
             return;
         }
-        if(checkQueryCommand(command)||checkIOCommand(command)||checkFormCommand(command))
+        if(checkCommand(command)||checkIOCommand(command)||checkFormCommand(command))
             return;
         System.out.println("Command not exist!");
     }
@@ -216,9 +223,9 @@ public class CommandDealer {
         return true;
     }
 
-    private boolean checkQueryCommand(String command) {
+    private boolean checkCommand(String command) {
         CmdMatchRes r;
-        for(Query q: queryList){
+        for(Transfer q: cmdList){
             r = q.match(command);
             switch (r){
                 case UN_CORRECT_FORM:
@@ -229,8 +236,8 @@ public class CommandDealer {
                         System.out.println("You are not authority to access this!");
                     }else{
                         showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
-                        String test = q.generateSQL(currentID, uClass, uDepartment);
-                        System.out.println(test);
+                        String sql = q.generateSQL(currentID, uClass, uDepartment);
+                        System.out.println(sql);
                     }
                     return true;
                 default:

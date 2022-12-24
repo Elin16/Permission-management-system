@@ -1,10 +1,11 @@
 package Entity.Query;
 import Controller.CommandParser;
+import Entity.Transfer;
 
 // 过去 n 天尚未批准的入/出校申请数量及详细信息；
 //$ show-np-entry-app -w <wait state: submitted/approved> -d <n days> -u <if has u, that is a s(statics). otherwise, is a d(detail)>
 //$ show-np-leave-app -w <wait state: submitted/approved> -d <n days> -u <if has u, that is a s(statics). otherwise, is a d(detail)>
-public class NpAppQuery extends Query {
+public class NpAppQuery extends Transfer {
     private String days;
     private String progressSql;
     public NpAppQuery(String cmd, String table){

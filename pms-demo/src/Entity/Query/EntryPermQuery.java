@@ -1,13 +1,13 @@
 package Entity.Query;
 
 import Controller.CommandParser;
-import Controller.usertype;
+import Entity.Transfer;
 
 /*
 # 查询学生的入校权限
 $ show-entry-perm
 * */
-public class EntryPermQuery extends Query{
+public class EntryPermQuery extends Transfer {
     public EntryPermQuery(){
         MY_CMD = "show-entry-perm";
         isStatistics = false;

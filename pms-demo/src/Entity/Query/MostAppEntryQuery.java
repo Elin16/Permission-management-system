@@ -2,12 +2,13 @@ package Entity.Query;
 
 import Controller.CommandParser;
 import Controller.usertype;
+import Entity.Transfer;
 
 /*
 #前 n 个提交入校申请最多的学生，支持按多级范围（全校、院系、班级）进行筛选；
 $ show-most-entry-app -n <num student> -r <u/d/c> -id <null/dpt Id/class Id>
 * */
-public class MostAppEntryQuery extends Query{
+public class MostAppEntryQuery extends Transfer {
     private String number;
     private String range;
     private String queryID;
