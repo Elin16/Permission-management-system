@@ -5,6 +5,7 @@ import Controller.CommandParser;
 import Controller.usertype;
 import Repo.DBRepo;
 
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 public class Transfer {
@@ -155,13 +156,13 @@ public class Transfer {
         }else return "";
     }
     //todo
-    public int executeUpdate(String sql){
+    public int executeUpdate(String sql) throws Exception {
         return repository.executeUpdate(sql);
     }
     public String executeQuery(String sql){
         return "";
     }
-    public boolean executeCMD(){
+    public boolean executeCMD() throws Exception {
         return false;
     }
 }

@@ -112,4 +112,9 @@ public class DBRepo {
         Statement stmt = conn.createStatement();
         return stmt.execute(sql);
     }
+
+    public int executeUpdate(String sql) throws SQLException {
+        Statement stmt = conn.createStatement();
+        return stmt.executeUpdate(sql);
+    }
 }

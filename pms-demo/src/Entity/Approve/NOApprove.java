@@ -45,7 +45,7 @@ public class NOApprove extends Transfer {
                 "WHERE progress=" + originProgress + "\n" +
                 "AND ID=" + appId;
     }
-    public boolean executeCMD(){
+    public boolean executeCMD() throws Exception {
         int success = executeUpdate(generateSQL());
         if(success == 0 ){
             System.out.println("You entered a wrong report ID!");
