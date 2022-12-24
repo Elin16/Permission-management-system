@@ -169,7 +169,7 @@ FROM(
 WHERE ranked.io_rank=1;
 
 # out of school total time
-SELECT studentID, dateDiff(date(ins), date(oos)) + dateDiff(firstIsIn*(curdate()-365), lastIsOut*curdate())
+SELECT t.ID, dateDiff(date(ins), date(oos)) + dateDiff(firstIsIn*(curdate()-365), lastIsOut*curdate())
 FROM (
     SELECT studentID, SUM(IOTime) as ins
     FROM IOLog
@@ -191,7 +191,7 @@ FROM (
      (
 
          # 考虑minIn不存在，即没有出校记录，这部分学生就不存在c1表里了
-        SELECT studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
+        SELECT c1.studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
         FROM (
                  SELECT studentID, MIN(IOTime) as minInTime
                  FROM IOLog
@@ -208,7 +208,7 @@ FROM (
     ) as c,
      (
          # 考虑maxOut不存在，即没有入校记录，这部分学生就不存在d2表里了
-         SELECT studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
+         SELECT d1.studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
          FROM (
                   SELECT studentID, MAX(IOTime) as maxInTime
                   FROM IOLog
@@ -229,7 +229,7 @@ WHERE a.studentID = t.ID and b.studentID = t.ID and c.studentID = t.ID and d.stu
 # 使用分窗函数，难点依然是只有一条IO怎么办
 #
 
-SELECT studentID, dateDiff(date(ins), date(oos)) + dateDiff((firstIsIn||c.firstIsIn=NULL)*(curdate()-365), (lastIsOut||lastIsOut=NULL)*curdate())
+SELECT t.ID, (ins-oos)/3600 , dateDiff((firstIsIn||(isnull(c.firstIsIn)))*(curdate()-365), (lastIsOut||(isnull(lastIsOut)))*curdate())
 FROM (
          SELECT studentID, SUM(IOTime) as ins
          FROM IOLog
@@ -250,7 +250,7 @@ FROM (
      # 只有out：out - year end
      (
          # 考虑minIn不存在，即没有出校记录，这部分学生就不存在c1表里了
-         SELECT studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
+         SELECT c1.studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
          FROM (
                   SELECT studentID, MIN(IOTime) as minInTime
                   FROM IOLog
@@ -268,7 +268,7 @@ FROM (
          left join
      (
          # 考虑maxOut不存在，即没有入校记录，这部分学生就不存在d2表里了
-         SELECT studentID, (TIMEDIFF(maxInTime,maxOutTime) < 0) as LastIsOut
+         SELECT d1.studentID, (TIMEDIFF(maxInTime,maxOutTime) < 0) as lastIsOut
          FROM (
                   SELECT studentID, MAX(IOTime) as maxInTime
                   FROM IOLog
@@ -288,7 +288,59 @@ WHERE a.studentID = t.ID and b.studentID = t.ID
 
 
 
-
+# 12.23 new
+SELECT t.ID, IFNULL(ins, 0), IFNULL(oos, 0), (IFNULL(d.LastIsOut, 0))*current_date, (((IFNULL(d.LastIsOut, 0))*current_date+IFNULL(ins, 0))-(IFNULL(c.firstIsIn, 0))* (current_date-365)+IFNULL(oos, 0)) as firstLast
+FROM  studentBelonging as t
+          left join
+      (
+          SELECT studentID, IFNULL(SUM(date(IOTime)), 0) as ins
+          FROM IOLog
+          WHERE datediff(curdate(),date(IOtime)) < 365 AND IOType='in'
+          GROUP BY studentID
+      ) as a on t.ID=a.studentID
+          left join
+      (
+          SELECT studentID, IFNULL(SUM(date(IOTime)), 0) as oos
+          FROM IOLog
+          WHERE datediff(curdate(),date(IOtime)) < 365  AND IOType='out'
+          GROUP BY studentID
+      ) as b on t.ID=b.studentID
+          left join
+      (
+          # 考虑minIn不存在，即没有出校记录，这部分学生就不存在c1表里了
+          SELECT c1.studentID, (TIMEDIFF(minInTime,minOutTime) < 0) as firstIsIn
+          FROM (
+                   SELECT studentID, MIN(IOTime) as minInTime
+                   FROM IOLog
+                   WHERE IOType='in'
+                   GROUP BY studentID
+               ) as c1,
+               (
+                   SELECT studentID, MIN(IOTime) as minOutTime
+                   FROM IOLog
+                   WHERE IOType='out'
+                   GROUP BY studentID
+               ) as c2
+          WHERE c1.studentID=c2.studentID
+      ) as c ON t.ID=c.studentID
+          left join
+      (
+          # 考虑maxOut不存在，即没有入校记录，这部分学生就不存在d2表里了
+          SELECT d1.studentID, (TIMEDIFF(maxInTime,maxOutTime) < 0) as LastIsOut
+          FROM (
+                   SELECT studentID, MAX(IOTime) as maxInTime
+                   FROM IOLog
+                   WHERE IOType='in'
+                   GROUP BY studentID
+               ) as d1,
+               (
+                   SELECT studentID, MIN(IOTime) as maxOutTime
+                   FROM IOLog
+                   WHERE IOType='out'
+                   GROUP BY studentID
+               ) as d2
+          WHERE d1.studentID=d2.studentID
+      ) as d ON t.ID=d.studentID
 
 
 
