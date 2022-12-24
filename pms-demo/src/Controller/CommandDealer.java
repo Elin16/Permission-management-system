@@ -140,12 +140,33 @@ public class CommandDealer {
     }
     private void dealIO(String ioType, String command, int perm){
         String IOTime = cp.getParameter(command, "-t");
-        String campusName = cp.getParameter(command, "-c");
+        String campusID = cp.getParameter(command, "-c");
+        int icampusID = Integer.parseInt(campusID);
+        String campusName = "";
         try{
-            dbs.insertIOLog(currentID, IOTime, ioType, campusName, perm);
-            System.out.println("Clock success!");
-        }catch(Exception e){
-            System.out.println("System failed! Please try again!");
+            campusName = dbs.getCampusName(campusID);
+        } catch (Exception e){
+            System.out.println("No such a campus!");
+            return;
+        }
+        int studentPerm =0;
+        try{
+            studentPerm = Integer.parseInt(dbs.getStudentEntryPerm(currentID));
+        } catch (Exception e) {
+            System.out.println("Fail to get student's permission!");
+        }
+        if(((studentPerm>>(icampusID-1)) & 1) > 0){
+            try{
+                if(dbs.insertIOLog(currentID, IOTime, ioType, campusName)) {
+                    System.out.println("Clock success!");
+                } else {
+                    System.out.println("Clock fail! Maybe you have been in/out of the school!");
+                }
+            }catch(Exception e){
+                System.out.println("System failed! Please try again!");
+            }
+        } else {
+            System.out.println("Sorry! You have no permission to enter this campus!");
         }
     }
     private boolean isStudent(){
