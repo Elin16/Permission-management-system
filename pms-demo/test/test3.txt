@@ -1,0 +1,4 @@
+login -t "t" -u "2"
+show-entry-app -w "wait" -d "7"
+show-leave-app -w "wait" -d "7"
+NO-entry -id "6" -r "tutor is angry"

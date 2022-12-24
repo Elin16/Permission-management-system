@@ -30,10 +30,10 @@ public class Transfer {
     public CmdMatchRes match(String command) {
         currentCMD = command;
         String[] splitCommand = currentCMD.split(" ");
-        if (splitCommand[0].equals(MY_CMD) == false)
+        if (!splitCommand[0].equals(MY_CMD))
             return CmdMatchRes.UN_MATCH;
         else
-            return getParameters() == true ? CmdMatchRes.MATCH : CmdMatchRes.UN_CORRECT_FORM;
+            return getParameters() ? CmdMatchRes.MATCH : CmdMatchRes.UN_CORRECT_FORM;
     }
     // this is used in the queries which user can set the range of query
     // etc. the top n student of xxx
@@ -167,7 +167,11 @@ public class Transfer {
         return false;
     }
 
-    public CommandType getCommandTye() {
+    public CommandType getCommandType() {
         return cmdType;
+    }
+
+    public String generateSQL() {
+        return "";
     }
 }

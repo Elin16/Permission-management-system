@@ -42,10 +42,10 @@ public class CommandDealer {
         cmdList.add(new MostIOQuery());
         cmdList.add(new OosQuery());
         cmdList.add(new StayOosQuery());
-        cmdList.add(new NOApprove("NO-entry","entryApplication"));
-        cmdList.add(new NOApprove("NO-leave","leaveApplication"));
-        cmdList.add(new OKApprove("OK-entry","entryApplication"));
-        cmdList.add(new OKApprove("OK-leave","leaveApplication"));
+        cmdList.add(new NOApprove("NO-entry","entryApplication", dbs.getRepo()));
+        cmdList.add(new NOApprove("NO-leave","leaveApplication", dbs.getRepo()));
+        cmdList.add(new OKApprove("OK-entry","entryApplication", dbs.getRepo()));
+        cmdList.add(new OKApprove("OK-leave","leaveApplication", dbs.getRepo()));
         this.dbs.dropStudentBelongingView();
         this.dbs.createStudentBelongingView();
     }
@@ -235,9 +235,10 @@ public class CommandDealer {
                     if(!q.hasPerm(userType)){
                         System.out.println("You are not authority to access this!");
                     }else{
-                        String sql = q.generateSQL(currentID, uClass, uDepartment);
+                        String sql = q.generateSQL();
                         System.out.println(sql);
-                        if(q.getCommandTye() == UPDATE){
+                        System.out.println(q.getCommandType().toString());
+                        if(q.getCommandType() == UPDATE){
                             try{
                                 q.executeCMD();
                             }catch (Exception e){

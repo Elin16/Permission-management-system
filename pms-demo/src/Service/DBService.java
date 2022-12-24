@@ -140,7 +140,7 @@ public class DBService {
                 "where ID in " +
                 "(select classID " +
                 "from tutor " +
-                "where ID=)" + id);
+                "where ID=" + id+")");
         rs.next();
         return rs.getString(1);
     }
@@ -148,7 +148,7 @@ public class DBService {
     public String getAdminDepartment(String id) throws Exception {
         ResultSet rs = dbRepo.query("select dptID " +
                 "from admin " +
-                "where ID=)" + id);
+                "where ID=" + id+")");
         rs.next();
         return rs.getString(1);
     }
@@ -170,5 +170,9 @@ public class DBService {
     public boolean updateEntryApplication(String newType, String applicationID) throws SQLException {
         String sql = "update EntryApplication set progress=" + newType+" where ID=" + applicationID;
         return dbRepo.execute(sql);
+    }
+
+    public DBRepo getRepo() {
+        return dbRepo;
     }
 }

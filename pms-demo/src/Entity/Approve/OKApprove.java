@@ -3,6 +3,7 @@ package Entity.Approve;
 import Controller.CommandParser;
 import Controller.UserType;
 import Entity.Transfer;
+import Repo.DBRepo;
 
 import static Controller.CommandType.UPDATE;
 
@@ -20,12 +21,13 @@ import static Controller.CommandType.UPDATE;
 public class OKApprove extends Transfer {
     String appId;
     String table;
-    public OKApprove(String cmd,String table){
+    public OKApprove(String cmd,String table, DBRepo dbRepo){
         MY_CMD=cmd;
         cp = new CommandParser();
         appId="";
         this.table = table;
         cmdType = UPDATE;
+        this.repository = dbRepo;
     }
     public boolean hasPerm(UserType uType){
         userType = uType;
@@ -35,8 +37,8 @@ public class OKApprove extends Transfer {
         appId = getParameterOfPositiveNumber("-id");
         return !(appId.equals(""));
     }
-    //todo generateSQL
-    protected String generateSQL(){
+    @Override
+    public String generateSQL(){
         String progress, originProgress;
         if(isDptAdmin()){
             originProgress = "approved";
@@ -46,8 +48,8 @@ public class OKApprove extends Transfer {
             progress = "approved";
         }
         return "UPDATE "+table+"\n" +
-                "SET progress=" + progress + "\n" +
-                "WHERE progress=" + originProgress + "\n" +
+                "SET progress='" + progress + "'\n" +
+                "WHERE progress='" + originProgress + "'\n" +
                 "AND ID=" + appId;
     }
     public boolean executeCMD() throws Exception {
