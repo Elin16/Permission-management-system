@@ -50,7 +50,7 @@ public class NOApprove extends Transfer {
         originProgress = isDptAdmin()?"approved":"submitted";
          return "UPDATE "+table+"\n" +
                 "SET progress='refused',\n" +
-                "reason='" + reason + "'\n" +
+                "refuseReason='" + reason + "'\n" +
                 "WHERE progress='" + originProgress + "'\n" +
                 "AND ID=" + appId;
     }
