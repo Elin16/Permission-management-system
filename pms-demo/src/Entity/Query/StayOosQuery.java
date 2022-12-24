@@ -3,6 +3,8 @@ package Entity.Query;
 import Controller.CommandParser;
 import Entity.Transfer;
 
+import static Controller.CommandType.QUERY;
+
 /*
 $ show-always-is -d <n days> -r <u/dept id /class id> (-u)
 * */
@@ -11,6 +13,7 @@ public class StayOosQuery extends Transfer {
         MY_CMD = "show-stay-oos";
         isStatistics = false;
         cp = new CommandParser();
+        cmdType = QUERY;
     }
     // get -u(if exists)
     @Override

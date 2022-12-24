@@ -3,6 +3,8 @@ package Entity.Query;
 import Controller.CommandParser;
 import Entity.Transfer;
 
+import static Controller.CommandType.QUERY;
+
 /*
 #  已出校但尚未返回校园（即离校状态）的学生数量、个人信息及各自的离校时间；
 $ show-oos (-u)
@@ -18,6 +20,7 @@ public class OosQuery extends Transfer {
         MY_CMD = "show-oos";
         isStatistics = false;
         cp = new CommandParser();
+        cmdType = QUERY;
     }
     // get -u(if exists)
     @Override

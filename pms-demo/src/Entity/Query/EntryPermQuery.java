@@ -3,6 +3,8 @@ package Entity.Query;
 import Controller.CommandParser;
 import Entity.Transfer;
 
+import static Controller.CommandType.QUERY;
+
 /*
 # 查询学生的入校权限
 $ show-entry-perm
@@ -12,6 +14,7 @@ public class EntryPermQuery extends Transfer {
         MY_CMD = "show-entry-perm";
         isStatistics = false;
         cp = new CommandParser();
+        cmdType = QUERY;
     }
     // get -u(if exists)
     @Override

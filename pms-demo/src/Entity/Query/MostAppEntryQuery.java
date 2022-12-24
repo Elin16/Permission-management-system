@@ -1,8 +1,10 @@
 package Entity.Query;
 
 import Controller.CommandParser;
-import Controller.usertype;
+import Controller.UserType;
 import Entity.Transfer;
+
+import static Controller.CommandType.QUERY;
 
 /*
 #前 n 个提交入校申请最多的学生，支持按多级范围（全校、院系、班级）进行筛选；
@@ -16,6 +18,7 @@ public class MostAppEntryQuery extends Transfer {
         MY_CMD = "show-most-entry-app";
         isStatistics = false;
         cp = new CommandParser();
+        cmdType = QUERY;
     }
     //todo: overwrite getParameter
     @Override
@@ -34,7 +37,7 @@ public class MostAppEntryQuery extends Transfer {
         }
         return true;
     }
-    public boolean hasPerm(usertype uType){
+    public boolean hasPerm(UserType uType){
         userType = uType;
         return (isTeacher()) && hasPermWithRangeSetter(range);
     }

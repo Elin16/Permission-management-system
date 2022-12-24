@@ -2,10 +2,10 @@ package Entity;
 
 import Controller.CmdMatchRes;
 import Controller.CommandParser;
-import Controller.usertype;
+import Controller.CommandType;
+import Controller.UserType;
 import Repo.DBRepo;
 
-import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 public class Transfer {
@@ -16,8 +16,9 @@ public class Transfer {
     protected String positiveNumberPattern = "[0-9]";
     protected boolean isStatistics;
     protected String currentCMD;
-    protected usertype userType;
+    protected UserType userType;
     protected DBRepo repository;
+    protected CommandType cmdType;
     public Transfer() {
     }
 
@@ -36,7 +37,7 @@ public class Transfer {
     }
     // this is used in the queries which user can set the range of query
     // etc. the top n student of xxx
-    public boolean hasPerm(usertype uType){
+    public boolean hasPerm(UserType uType){
         userType = uType;
         return true;
     }
@@ -126,16 +127,16 @@ public class Transfer {
         return level +" "+ group + "\n";
     }
     protected boolean isStudent(){
-        return (userType == usertype.STUDENT);
+        return (userType == UserType.STUDENT);
     }
     protected boolean isTeacher(){
-        return (userType != usertype.STUDENT);
+        return (userType != UserType.STUDENT);
     }
     protected boolean isDptAdmin(){
-        return (userType == usertype.ADMIN);
+        return (userType == UserType.ADMIN);
     }
     protected boolean isSuperUser(){
-        return (userType == usertype.SUPER_USER);
+        return (userType == UserType.SUPER_USER);
     }
     protected boolean hasPermWithRangeSetter(String range){
         System.out.printf("perm. range is %s%n", range);
@@ -164,5 +165,9 @@ public class Transfer {
     }
     public boolean executeCMD() throws Exception {
         return false;
+    }
+
+    public CommandType getCommandTye() {
+        return cmdType;
     }
 }

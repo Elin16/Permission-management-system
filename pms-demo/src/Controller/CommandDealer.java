@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static Controller.CommandType.UPDATE;
+
 public class CommandDealer {
     private CommandParser cp;
-    private usertype userType;
+    private UserType userType;
     private String uDepartment;
     private String uClass;
     private DBService dbs;
@@ -23,7 +25,7 @@ public class CommandDealer {
     private List<Transfer> cmdList;
     public CommandDealer() throws Exception {
         this.cp = new CommandParser();
-        this.userType = usertype.LOGOUT;
+        this.userType = UserType.LOGOUT;
         this.dbs = new DBService();
         this.currentID = "";
         this.cmdList = new ArrayList<>();
@@ -47,7 +49,6 @@ public class CommandDealer {
         this.dbs.dropStudentBelongingView();
         this.dbs.createStudentBelongingView();
     }
-
     private void login(String command) throws Exception {
         String type = cp.getParameter(command, "-t");
         String id = "";
@@ -60,7 +61,7 @@ public class CommandDealer {
                 System.out.println("Please enter your password:");
                 password = input.nextLine();
                 if(dbs.checkStudentLogin(id,password)){
-                    userType = usertype.STUDENT;
+                    userType = UserType.STUDENT;
                     currentID = id;
                     uClass = dbs.getStudentClass(id);
                     uDepartment = dbs.getStudentDepartment(id);
@@ -74,7 +75,7 @@ public class CommandDealer {
                 System.out.println("Please enter your password:");
                 password = input.nextLine();
                 if(dbs.checkTutorLogin(id,password)) {
-                    userType = usertype.TUTOR;
+                    userType = UserType.TUTOR;
                     currentID = id;
                     uClass = dbs.getTutorClass(id);
                     uDepartment = dbs.getTutorDepartment(id);
@@ -87,7 +88,7 @@ public class CommandDealer {
                 System.out.println("Please enter your password:");
                 password = input.nextLine();
                 if(dbs.checkAdminLogin(id,password)) {
-                    userType = usertype.ADMIN;
+                    userType = UserType.ADMIN;
                     currentID = id;
                     uDepartment = dbs.getAdminDepartment(id);
                     System.out.println("Log in success! Your ID is " + id);
@@ -99,7 +100,7 @@ public class CommandDealer {
                 System.out.println("Please enter your password:");
                 password = input.nextLine();
                 if(dbs.checkSuperAdminLogin(id,password)) {
-                    userType = usertype.SUPER_USER;
+                    userType = UserType.SUPER_USER;
                     currentID = id;
                     System.out.println("Log in success! Your ID is " + id);
                     success = true;
@@ -148,9 +149,8 @@ public class CommandDealer {
         }
     }
     private boolean isStudent(){
-        return userType == usertype.STUDENT;
+        return userType == UserType.STUDENT;
     }
-
     public void executeCommand(String command) throws Exception {
         String[] splitCommand = command.split(" ");
 
@@ -169,17 +169,17 @@ public class CommandDealer {
         }
 
         if(splitCommand[0].equals("logout")){
-            userType = usertype.LOGOUT;
+            userType = UserType.LOGOUT;
             currentID = "";
             return;
         }
-        if(checkCommand(command)||checkIOCommand(command)||checkFormCommand(command))
+        if(checkTransferCommand(command)||checkIOCommand(command)||checkFormCommand(command))
             return;
         System.out.println("Command not exist!");
     }
 
     private boolean isLogout() {
-        return userType == usertype.LOGOUT;
+        return userType == UserType.LOGOUT;
     }
 
     private boolean checkIOCommand(String command){
@@ -223,7 +223,7 @@ public class CommandDealer {
         return true;
     }
 
-    private boolean checkCommand(String command) {
+    private boolean checkTransferCommand(String command) {
         CmdMatchRes r;
         for(Transfer q: cmdList){
             r = q.match(command);
@@ -235,9 +235,17 @@ public class CommandDealer {
                     if(!q.hasPerm(userType)){
                         System.out.println("You are not authority to access this!");
                     }else{
-                        showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
                         String sql = q.generateSQL(currentID, uClass, uDepartment);
                         System.out.println(sql);
+                        if(q.getCommandTye() == UPDATE){
+                            try{
+                                q.executeCMD();
+                            }catch (Exception e){
+                                System.out.println("Executing failed!");
+                            }
+                        }else{
+                            showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
+                        }
                     }
                     return true;
                 default:

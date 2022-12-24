@@ -1,8 +1,11 @@
 package Entity.Approve;
 
 import Controller.CommandParser;
-import Controller.usertype;
+import Controller.UserType;
 import Entity.Transfer;
+
+import static Controller.CommandType.QUERY;
+import static Controller.CommandType.UPDATE;
 
 /* teachers can view application detail using the command:
  * $ show-np-app
@@ -24,8 +27,9 @@ public class NOApprove extends Transfer {
         cp = new CommandParser();
         appId="";
         this.table = table;
+        cmdType = UPDATE;
     }
-    public boolean hasPerm(usertype uType){
+    public boolean hasPerm(UserType uType){
         return !(isStudent()||isSuperUser());
     }
     protected boolean getParameters(){

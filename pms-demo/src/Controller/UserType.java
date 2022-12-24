@@ -1,5 +1,5 @@
 package Controller;
 
-public enum usertype {
+public enum UserType {
     ADMIN, TUTOR, STUDENT, SUPER_USER, LOGOUT
 }

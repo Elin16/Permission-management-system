@@ -1,8 +1,10 @@
 package Entity.Query;
 
 import Controller.CommandParser;
-import Controller.usertype;
+import Controller.UserType;
 import Entity.Transfer;
+
+import static Controller.CommandType.QUERY;
 
 /*
 # 连续 n 天填写“健康日报”时间（精确到分钟）完全一致的学生数量，个人信息；
@@ -14,6 +16,7 @@ public class ExactReportQuery extends Transfer {
         MY_CMD = "show-exact-report";
         isStatistics = false;
         cp = new CommandParser();
+        cmdType = QUERY;
     }
     // get -u(if exists)
     @Override
@@ -27,7 +30,7 @@ public class ExactReportQuery extends Transfer {
         return true;
     }
     @Override
-    public boolean hasPerm(usertype uType){
+    public boolean hasPerm(UserType uType){
         userType = uType;
         return !isStudent();
     }

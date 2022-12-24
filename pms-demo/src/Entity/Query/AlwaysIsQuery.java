@@ -1,8 +1,12 @@
 package Entity.Query;
 
 import Controller.CommandParser;
-import Controller.usertype;
+import Controller.UserType;
 import Entity.Transfer;
+
+import javax.management.Query;
+
+import static Controller.CommandType.QUERY;
 
 /*
 # 过去 n 天一直在校未曾出校的学生，支持按多级范围（全校、院系、班级）进行筛选；
@@ -17,6 +21,7 @@ public class AlwaysIsQuery extends Transfer {
         isStatistics = false;
         cp = new CommandParser();
         days = "0";
+        cmdType = QUERY;
     }
     //
     // get -u(if exists)
@@ -43,7 +48,7 @@ public class AlwaysIsQuery extends Transfer {
         return true;
     }
     @Override
-    public boolean hasPerm(usertype uType){
+    public boolean hasPerm(UserType uType){
         userType = uType;
         if( isStudent() ) return false;
         return hasPermWithRangeSetter(range);

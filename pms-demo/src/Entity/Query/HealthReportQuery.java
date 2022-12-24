@@ -3,6 +3,8 @@ package Entity.Query;
 import Controller.CommandParser;
 import Entity.Transfer;
 
+import static Controller.CommandType.QUERY;
+
 /*
 # 查询学生过去n天的每日填报信息
 $ show-health-report -d <n days>
@@ -13,6 +15,7 @@ public class HealthReportQuery extends Transfer {
         MY_CMD = "show-health-report";
         isStatistics = false;
         cp = new CommandParser();
+        cmdType = QUERY;
     }
     // get -u(if exists)
     @Override

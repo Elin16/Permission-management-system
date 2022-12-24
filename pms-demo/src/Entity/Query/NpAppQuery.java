@@ -2,6 +2,8 @@ package Entity.Query;
 import Controller.CommandParser;
 import Entity.Transfer;
 
+import static Controller.CommandType.QUERY;
+
 // 过去 n 天尚未批准的入/出校申请数量及详细信息；
 //$ show-np-entry-app -w <wait state: submitted/approved> -d <n days> -u <if has u, that is a s(statics). otherwise, is a d(detail)>
 //$ show-np-leave-app -w <wait state: submitted/approved> -d <n days> -u <if has u, that is a s(statics). otherwise, is a d(detail)>
@@ -15,6 +17,7 @@ public class NpAppQuery extends Transfer {
         isStatistics = false;
         cp = new CommandParser();
         progressSql = "";
+        cmdType = QUERY;
     }
     // get -d <n days> and -u(if exists)
     @Override

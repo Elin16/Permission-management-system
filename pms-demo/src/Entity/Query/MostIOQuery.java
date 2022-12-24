@@ -3,6 +3,8 @@ package Entity.Query;
 import Controller.CommandParser;
 import Entity.Transfer;
 
+import static Controller.CommandType.QUERY;
+
 /*
 # 过去n天每个院系学生产生最多出入校记录的校区
 $ show-most-ios-campus
@@ -12,6 +14,7 @@ public class MostIOQuery extends Transfer {
         MY_CMD = "show-most-ios-campus";
         isStatistics = false;
         cp = new CommandParser();
+        cmdType = QUERY;
     }
     //Major Query
     @Override
