@@ -13,11 +13,27 @@ public class Main {
     static CommandDealer cd;
     public static void main(String[] args) throws Exception {
         // prepare environment until connection ready
-
         System.out.println("Welcome to Permission Management System!");
         cd = new CommandDealer();
+        // run from file by role
+        if(args.length > 0){
+            switch (args[0]){
+                case "s":
+                    runFromFile("pms-demo/test/student.normal");
+                    return;
+                case "t":
+                    runFromFile("pms-demo/test/tutor.normal");
+                    return;
+                case "a":
+                    runFromFile("pms-demo/test/admin.normal");
+                    return;
+                case "sa":
+                    runFromFile("pms-demo/test/superAdmin.normal");
+                    return;
+            }
+        }
+        // interactive running
         // deal with command
-
         while(true){
             System.out.println("Please enter your command!");
             Scanner input = new Scanner(System.in);
@@ -28,11 +44,6 @@ public class Main {
             cd.executeCommand(command);
         }
         System.out.println("Bye!");
-
-        //runFromFile("pms-demo/test/student.normal");
-        //runFromFile("pms-demo/test/tutor.normal");
-        //runFromFile("pms-demo/test/admin.normal");
-        //runFromFile("pms-demo/test/superAdmin.normal");
 
     }
 
