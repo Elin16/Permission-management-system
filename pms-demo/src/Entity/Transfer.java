@@ -171,10 +171,6 @@ public class Transfer {
         return cmdType;
     }
 
-    public String generateSQL() {
-        return "";
-    }
-
     public String getMY_CMD() {
         return MY_CMD;
     }

@@ -46,6 +46,8 @@ public class CommandDealer {
         cmdList.add(new NOApprove("NO-leave","leaveApplication", dbs.getRepo()));
         cmdList.add(new OKApprove("OK-entry","entryApplication", dbs.getRepo()));
         cmdList.add(new OKApprove("OK-leave","leaveApplication", dbs.getRepo()));
+        cmdList.add(new LongestLeaveTimeQuery());
+        cmdList.add(new YearlyLeaveTime());
         this.dbs.dropStudentBelongingView();
         this.dbs.createStudentBelongingView();
     }

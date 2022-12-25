@@ -15,7 +15,7 @@ public class LongestLeaveTimeQuery extends Transfer {
     private String range;
     private String queryID;
     public LongestLeaveTimeQuery(){
-        MY_CMD = "show-most-entry-app";
+        MY_CMD = "show-most-leave-time";
         isStatistics = false;
         cp = new CommandParser();
         cmdType = QUERY;
