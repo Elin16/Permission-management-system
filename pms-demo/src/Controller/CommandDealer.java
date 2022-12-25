@@ -268,6 +268,8 @@ public class CommandDealer {
                         if(q.getCommandType() == UPDATE){
                             try{
                                 q.executeCMD();
+                                System.out.println("- user command:"+q.getMY_CMD());
+                                System.out.println("-sql:\n```mysql\n"+q.generateSQL()+"```");
                             }catch (Exception e){
                                 System.out.println("Executing failed!");
                             }

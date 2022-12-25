@@ -174,4 +174,8 @@ public class Transfer {
     public String generateSQL() {
         return "";
     }
+
+    public String getMY_CMD() {
+        return MY_CMD;
+    }
 }
