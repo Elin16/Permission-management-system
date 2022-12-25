@@ -3,6 +3,7 @@ package Entity.Approve;
 import Controller.CommandParser;
 import Controller.UserType;
 import Entity.Transfer;
+import Repo.DBRepo;
 
 import static Controller.CommandType.QUERY;
 import static Controller.CommandType.UPDATE;
@@ -22,12 +23,13 @@ public class NOApprove extends Transfer {
     String appId;
     String reason;
     String table;
-    public NOApprove(String cmd, String table){
+    public NOApprove(String cmd, String table, DBRepo dbRepo){
         MY_CMD=cmd;
         cp = new CommandParser();
         appId="";
         this.table = table;
         cmdType = UPDATE;
+        this.repository = dbRepo;
     }
     public boolean hasPerm(UserType uType){
         return !(isStudent()||isSuperUser());
@@ -35,18 +37,21 @@ public class NOApprove extends Transfer {
     protected boolean getParameters(){
         appId = getParameterOfPositiveNumber("-id");
         if(appId.equals("")) return false;
-        reason = cp.getParameter(currentCMD,"-r");
-        if(reason.equals("")) return false;
+        if(cp.optionExist(currentCMD, "-r")){
+            reason = cp.getParameter(currentCMD,"-r");
+        } else {
+            reason = "not filled in";
+            return true;
+        }
         return true;
     }
-    //todo generateSQL
-    protected String generateSQL(){
+    public String generateSQL(){
         String originProgress;
         originProgress = isDptAdmin()?"approved":"submitted";
          return "UPDATE "+table+"\n" +
-                "SET progress=refused\n" +
-                "AND reason=" + reason + "\n" +
-                "WHERE progress=" + originProgress + "\n" +
+                "SET progress='refused',\n" +
+                "refuseReason='" + reason + "'\n" +
+                "WHERE progress='" + originProgress + "'\n" +
                 "AND ID=" + appId;
     }
     public boolean executeCMD() throws Exception {

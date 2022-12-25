@@ -13,7 +13,7 @@ public class AppQuery extends Transfer {
     public AppQuery(String cmd, String table){
         MY_CMD = cmd;
         TABLE = table;
-        days = "";
+        days = "9999";
         progressSql = "( progress='submitted' OR progress='approved')";
         isStatistics = false;
         cp = new CommandParser();
@@ -23,13 +23,15 @@ public class AppQuery extends Transfer {
     @Override
     protected boolean getParameters() {
         // get -w(if exists) and -w's parameter
+        // get -d and -d's parameter
+        days = cp.getParameter(currentCMD, "-d");
         return !( cp.optionExist(currentCMD,"-w") && (!getSqlOfWaitState()) );
     }
     //Major Query
     @Override
     protected String sqlBody(){
         return " FROM " + TABLE + ", studentBelonging as t\n" +
-        "WHERE + "+ progressSql +" datediff(curdate(), date(applyTime)) < " + days +"\n"+
+        "WHERE "+ progressSql +" datediff(curdate(), date(applyTime)) < " + days +"\n"+
         "AND "+ TABLE +".studentID=t.ID\n";
     }
     private boolean getSqlOfWaitState(){

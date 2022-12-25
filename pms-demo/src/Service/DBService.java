@@ -37,14 +37,21 @@ public class DBService {
         return (Objects.equals(userpass, expectedPassword));
     }
 
-    public boolean insertIOLog(String id, String IOTime, String IOType, String campusName, int perm){
+    public boolean insertIOLog(String id, String IOTime, String IOType, String campusName){
         List<String> sqls = new ArrayList<String>();
         sqls.add(String.format("insert into IOLog(studentID,IOTime,IOType,campusName) " +
                 "values ('%s', '%s', '%s', '%s')", id, IOTime, IOType, campusName));
-        sqls.add(String.format("UPDATE student SET inSchool=%d WHERE ID=%s",perm, id));
+        System.out.printf("insert into IOLog(studentID,IOTime,IOType,campusName) " +
+                "values ('%s', '%s', '%s', '%s')%n", id, IOTime, IOType, campusName);
+        int newstate = (Objects.equals(IOType, "in")) ? 1 : 0;
+        sqls.add(String.format("UPDATE student SET inSchool=%d WHERE ID=%s",newstate, id));
+        System.out.printf("UPDATE student SET inSchool=%d WHERE ID=%s%n",newstate, id);
         try{
-            dbRepo.executeTransaction(sqls);
-            return true;
+            if(dbRepo.executeTransaction(sqls)) {
+                return true;
+            } else {
+                return false;
+            }
         }catch (Exception e){
             return false;
         }
@@ -116,6 +123,12 @@ public class DBService {
         return rs.getString(1);
     }
 
+    public String getCampusName(String id) throws Exception {
+        ResultSet rs = dbRepo.query("select name from campus where ID=" + id);
+        rs.next();
+        return rs.getString(1);
+    }
+
     public String getStudentDepartment(String id) throws Exception {
         ResultSet rs = dbRepo.query("select dptID " +
                 "from class " +
@@ -139,7 +152,7 @@ public class DBService {
                 "where ID in " +
                 "(select classID " +
                 "from tutor " +
-                "where ID=)" + id);
+                "where ID=" + id+")");
         rs.next();
         return rs.getString(1);
     }
@@ -147,7 +160,7 @@ public class DBService {
     public String getAdminDepartment(String id) throws Exception {
         ResultSet rs = dbRepo.query("select dptID " +
                 "from admin " +
-                "where ID=)" + id);
+                "where ID=" + id+")");
         rs.next();
         return rs.getString(1);
     }
@@ -172,9 +185,12 @@ public class DBService {
     }
 
     public int getStudentEntryPerm(String ID) throws Exception {
-        String sql = "SELECT perm FROM student WHERE ID="+ID;
+        String sql = "SELECT entryPerm FROM student WHERE ID=" + ID;
         ResultSet rs = dbRepo.query(sql);
         rs.next();
         return rs.getInt(1);
+    }
+    public DBRepo getRepo() {
+        return dbRepo;
     }
 }

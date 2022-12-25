@@ -42,10 +42,10 @@ public class CommandDealer {
         cmdList.add(new MostIOQuery());
         cmdList.add(new OosQuery());
         cmdList.add(new StayOosQuery());
-        cmdList.add(new NOApprove("NO-entry","entryApplication"));
-        cmdList.add(new NOApprove("NO-leave","leaveApplication"));
-        cmdList.add(new OKApprove("OK-entry","entryApplication"));
-        cmdList.add(new OKApprove("OK-leave","leaveApplication"));
+        cmdList.add(new NOApprove("NO-entry","entryApplication", dbs.getRepo()));
+        cmdList.add(new NOApprove("NO-leave","leaveApplication", dbs.getRepo()));
+        cmdList.add(new OKApprove("OK-entry","entryApplication", dbs.getRepo()));
+        cmdList.add(new OKApprove("OK-leave","leaveApplication", dbs.getRepo()));
         this.dbs.dropStudentBelongingView();
         this.dbs.createStudentBelongingView();
     }
@@ -144,35 +144,35 @@ public class CommandDealer {
         String campusName = cp.getParameter(command, "-c");
         try{
             if(ioType.equals("in")){
-                if(!hasPermissionToEntry(currentID, campusName)){
-                    System.out.println("You have no permission to entry campus "+campusName+" now!");
+                if(!hasPermissionToEntry(campusName)){
+                    System.out.println("You have no permission to entry campus " + campusName + " now!");
                     return ;
                 }
             }
-            dbs.insertIOLog(currentID, IOTime, ioType, campusName, perm);
+            dbs.insertIOLog(currentID, IOTime, ioType, campusName);
             System.out.println("Clock success!");
         }catch(Exception e){
             System.out.println("System failed! Please try again!");
         }
     }
-    //todo: query student permission in this campus
-    private boolean hasPermissionToEntry(String currentID, String campusName){
-        int permission = 0;
-        try {
-            dbs.getStudentEntryPerm(currentID);
-        }catch (Exception e){
-            System.out.println("Query student Entry Perm: ERROR!");
-        }
-        int campusNum = 0;
-        switch (campusName){
-            case "H": campusNum = 1;
+
+    private boolean hasPermissionToEntry(String campusName){
+            int studentPerm =0;
+            int campusNum = 0;
+            switch (campusName){
+                case "H": campusNum = 1;
                 break;
-            case "F": campusNum = 2;
+                case "F":campusNum = 2;
                 break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + campusName);
-        }
-        return (permission& (1<<(campusNum-1))) > 0 ;
+                default:campusNum = 0;
+                break;
+            }
+            try{
+                studentPerm = dbs.getStudentEntryPerm(currentID);
+            } catch (Exception e) {
+                System.out.println("Fail to get student's permission!");
+            }
+        return (campusNum>0) && (((studentPerm>>(campusNum-1)) & 1) > 0);
     }
 
     private boolean isStudent(){
@@ -262,9 +262,10 @@ public class CommandDealer {
                     if(!q.hasPerm(userType)){
                         System.out.println("You are not authority to access this!");
                     }else{
-                        String sql = q.generateSQL(currentID, uClass, uDepartment);
+                        String sql = q.generateSQL();
                         System.out.println(sql);
-                        if(q.getCommandTye() == UPDATE){
+                        System.out.println(q.getCommandType().toString());
+                        if(q.getCommandType() == UPDATE){
                             try{
                                 q.executeCMD();
                             }catch (Exception e){
