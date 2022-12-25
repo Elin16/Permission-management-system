@@ -1,0 +1,28 @@
+login -t "a" -u "1"
+show-health-report -d 5
+show-entry-perm
+show-entry-app -w wait
+show-entry-app -w ack
+show-leave-app -w ref
+show-leave-app -w wait
+show-leave-app -w ack
+show-leave-app -w ref
+show-yearly-leave-time-count
+show-np-entry-app -d 5
+show-np-entry-app -d 5 -u
+show-np-leave-app -d 3 -u
+show-np-leave-app -d 3
+show-most-entry-app -n 2
+show-most-entry-app -n 2 -r c -id 001
+show-most-leave-time -n 3
+show-most-leave-time -n 3  -r c -id 001
+show-oos
+show-oos -u
+show-stay-oos
+show-stay-oos -u
+show-leave-is
+show-leave-is -u
+show-always-is -d 3
+show-always-is -d 3  -r c -id 001
+show-exact-report -d 3
+show-most-ios-campus
