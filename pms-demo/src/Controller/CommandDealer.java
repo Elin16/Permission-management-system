@@ -138,16 +138,43 @@ public class CommandDealer {
             System.out.println("Print: System failed! Please try again!");
         }
     }
+
     private void dealIO(String ioType, String command, int perm){
         String IOTime = cp.getParameter(command, "-t");
         String campusName = cp.getParameter(command, "-c");
         try{
+            if(ioType.equals("in")){
+                if(!hasPermissionToEntry(currentID, campusName)){
+                    System.out.println("You have no permission to entry campus "+campusName+" now!");
+                    return ;
+                }
+            }
             dbs.insertIOLog(currentID, IOTime, ioType, campusName, perm);
             System.out.println("Clock success!");
         }catch(Exception e){
             System.out.println("System failed! Please try again!");
         }
     }
+    //todo: query student permission in this campus
+    private boolean hasPermissionToEntry(String currentID, String campusName){
+        int permission = 0;
+        try {
+            dbs.getStudentEntryPerm(currentID);
+        }catch (Exception e){
+            System.out.println("Query student Entry Perm: ERROR!");
+        }
+        int campusNum = 0;
+        switch (campusName){
+            case "H": campusNum = 1;
+                break;
+            case "F": campusNum = 2;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + campusName);
+        }
+        return (permission& (1<<(campusNum-1))) > 0 ;
+    }
+
     private boolean isStudent(){
         return userType == UserType.STUDENT;
     }

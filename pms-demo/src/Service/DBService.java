@@ -58,7 +58,6 @@ public class DBService {
         return (dbRepo.query(sql));
     }
 
-
     public void printResultSet(ResultSet rs) throws SQLException {
         ResultSetMetaData resultSetMetaData = rs.getMetaData();
         int ColumnCount = resultSetMetaData.getColumnCount();
@@ -170,5 +169,12 @@ public class DBService {
     public boolean updateEntryApplication(String newType, String applicationID) throws SQLException {
         String sql = "update EntryApplication set progress=" + newType+" where ID=" + applicationID;
         return dbRepo.execute(sql);
+    }
+
+    public int getStudentEntryPerm(String ID) throws Exception {
+        String sql = "SELECT perm FROM student WHERE ID="+ID;
+        ResultSet rs = dbRepo.query(sql);
+        rs.next();
+        return rs.getInt(1);
     }
 }
