@@ -22,34 +22,35 @@ public class AppQuery extends Transfer {
     @Override
     protected boolean getParameters() {
         // get -w(if exists) and -w's parameter
-        return ( cp.optionExist(currentCMD,"-w") && (getSqlOfWaitState()) );
+        if(cp.optionExist(currentCMD,"-w")){
+            String state = cp.getParameter(currentCMD,"-w");
+            return getStateSql(state);
+        }
+        return true;
     }
     //Major Query
     @Override
     protected String sqlBody(){
         return " FROM " + TABLE + ", studentBelonging as t\n" +
-        "WHERE "+ progressSql +
+        "WHERE "+ progressSql +"\n"+
         "AND "+ TABLE +".studentID=t.ID\n";
     }
-    private boolean getSqlOfWaitState(){
-        String parameter;
-        String wait;
-        if(isStudent() || isSuperUser()){
-            wait = " (progress='submitted' OR progress='approved') AND ";
-        }else if(isDptAdmin()){
-            wait = " progress='approved' AND ";
-        }else{
-            wait = " progress='submitted' AND ";
+    private boolean getStateSql(String state){
+        switch (state){
+            case "wait":
+                progressSql = "progress='submitted' OR progress='approved'";
+                return true;
+            case "ref":
+                progressSql = "progress='refused'";
+                return true;
+            case "ack":
+                progressSql = "progress='success'";
+                return true;
+            case "fin":
+                progressSql = "progress='finished'";
+                return true;
+            default:
+                return false;
         }
-        parameter = cp.getParameter(currentCMD,"-w");
-        if(parameter.equals("wait")){
-            progressSql = wait;
-        }else if(parameter.equals("refused")){
-            progressSql = " progress='refused' AND ";
-        }else if(parameter.equals("ack")){
-            progressSql = " (progress='success' OR progress='finished') AND ";
-        }
-        else return false;
-        return true;
     }
 }
