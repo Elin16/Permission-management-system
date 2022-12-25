@@ -23,6 +23,5 @@ show-stay-oos -u
 show-leave-is
 show-leave-is -u
 show-always-is -d "3"
-show-always-is -d "3"  -r c -id "001"
 show-exact-report -d "3"
 show-most-ios-campus

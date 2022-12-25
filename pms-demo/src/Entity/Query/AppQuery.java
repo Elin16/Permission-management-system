@@ -38,7 +38,7 @@ public class AppQuery extends Transfer {
     private boolean getStateSql(String state){
         switch (state){
             case "wait":
-                progressSql = "progress='submitted' OR progress='approved'";
+                progressSql = "(progress='submitted' OR progress='approved')";
                 return true;
             case "ref":
                 progressSql = "progress='refused'";

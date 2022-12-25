@@ -264,9 +264,6 @@ public class CommandDealer {
                     if(!q.hasPerm(userType)){
                         System.out.println("You are not authority to access this!");
                     }else{
-                        String sql = q.generateSQL();
-                        System.out.println(sql);
-                        System.out.println(q.getCommandType().toString());
                         if(q.getCommandType() == UPDATE){
                             try{
                                 q.executeCMD();
@@ -275,8 +272,8 @@ public class CommandDealer {
                             }catch (Exception e){
                                 System.out.println("Executing failed!");
                             }
-                        }else{
-                            System.out.println(q.generateSQL(currentID, uClass, uDepartment));
+                        } else{
+                            //System.out.println(q.generateSQL(currentID, uClass, uDepartment));
                             showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
                         }
                     }

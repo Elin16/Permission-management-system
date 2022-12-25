@@ -17,7 +17,7 @@ public class Main {
         System.out.println("Welcome to Permission Management System!");
         cd = new CommandDealer();
         // deal with command
-        /*
+
         while(true){
             System.out.println("Please enter your command!");
             Scanner input = new Scanner(System.in);
@@ -28,10 +28,10 @@ public class Main {
             cd.executeCommand(command);
         }
         System.out.println("Bye!");
-        */
+
         //runFromFile("pms-demo/test/student.normal");
         //runFromFile("pms-demo/test/tutor.normal");
-        runFromFile("pms-demo/test/admin.normal");
+        //runFromFile("pms-demo/test/admin.normal");
         //runFromFile("pms-demo/test/superAdmin.normal");
 
     }

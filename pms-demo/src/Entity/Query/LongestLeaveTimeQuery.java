@@ -43,7 +43,7 @@ public class LongestLeaveTimeQuery extends Transfer {
     @Override
     protected String sqlBody(){
         return  "FROM(\n" +
-                "   SELECT belong.ID, IFNULL(ins, 0), IFNULL(oos, 0), (IFNULL(d.LastIsOut, 0))*current_date, (((IFNULL(d.LastIsOut, 0))*current_date+IFNULL(ins, 0))-IFNULL(oos, 0))/ outTimes as averageLeave\n" +
+                "   SELECT belong.*, (((IFNULL(d.LastIsOut, 0))*current_date+IFNULL(ins, 0))-IFNULL(oos, 0))/ outTimes as averageLeave\n" +
                 "           FROM  studentBelonging as belong\n" +
                 "          left join\n" +
                 "      (\n" +

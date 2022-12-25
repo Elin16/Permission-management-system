@@ -8,12 +8,12 @@ import Repo.DBRepo;
 
 import java.util.regex.Pattern;
 
-public class Transfer {
+public abstract class Transfer {
     protected CommandParser cp;
     protected String MY_CMD;
     protected String TABLE;
     protected String sql;
-    protected String positiveNumberPattern = "[0-9]";
+    protected String positiveNumberPattern = "[0-9]*";
     protected boolean isStatistics;
     protected String currentCMD;
     protected UserType userType;
@@ -163,6 +163,11 @@ public class Transfer {
     public String executeQuery(String sql){
         return "";
     }
+
+    public String generateSQL(){
+        return "";
+    };
+
     public boolean executeCMD() throws Exception {
         return false;
     }

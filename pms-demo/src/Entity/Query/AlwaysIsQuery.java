@@ -69,7 +69,8 @@ public class AlwaysIsQuery extends Transfer {
                 "         ) AS lastInRecord\n" +
                 "    WHERE datediff(current_date, DATE(lastIn) ) > " + days + "\n" +
                 "AND s.inschool=1)" +
-                ")AS t\n";
+                ")AS t\n" +
+                " WHERE t.ID=t.ID\n";
     }
     @Override
     public String generateSQL(String uId, String classId, String dptId){
