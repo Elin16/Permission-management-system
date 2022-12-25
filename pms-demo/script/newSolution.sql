@@ -360,7 +360,6 @@ FROM  studentBelonging as t
       ) as b on t.ID=b.studentID
           left join
       (
-          # 考虑maxOut不存在，即没有入校记录，这部分学生就不存在d2表里了
           SELECT d1.studentID, maxInTime, maxOutTime, (TIMEDIFF(maxInTime,maxOutTime) < 0) as LastIsOut
           FROM (
                    SELECT studentID, MAX(IOTime) as maxInTime
