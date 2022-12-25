@@ -34,6 +34,7 @@ public class DBService {
 
     public boolean checkAdminLogin(String id, String userpass) throws Exception {
         String expectedPassword = dbRepo.findAdminPassByID(id);
+        System.out.println("check admin:" + id + " "+ userpass+" "+expectedPassword );
         return (Objects.equals(userpass, expectedPassword));
     }
 
@@ -160,7 +161,7 @@ public class DBService {
     public String getAdminDepartment(String id) throws Exception {
         ResultSet rs = dbRepo.query("select dptID " +
                 "from admin " +
-                "where ID=" + id+")");
+                "where ID=" + id);
         rs.next();
         return rs.getString(1);
     }

@@ -1,4 +1,4 @@
-login -t "a" -u "1"
+login -t "t" -u "1"
 show-health-report -d "5"
 show-entry-perm
 show-entry-app -w "wait"
@@ -23,6 +23,6 @@ show-stay-oos -u
 show-leave-is
 show-leave-is -u
 show-always-is -d "3"
-show-always-is -d "3"  -r "c" -id "001"
+show-always-is -d "3"  -r c -id "001"
 show-exact-report -d "3"
 show-most-ios-campus

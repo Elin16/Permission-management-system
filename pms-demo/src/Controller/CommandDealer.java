@@ -274,6 +274,7 @@ public class CommandDealer {
                                 System.out.println("Executing failed!");
                             }
                         }else{
+                            System.out.println(q.generateSQL(currentID, uClass, uDepartment));
                             showQueryResult(q.generateSQL(currentID, uClass, uDepartment));
                         }
                     }
