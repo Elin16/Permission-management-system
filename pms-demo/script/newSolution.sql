@@ -376,3 +376,17 @@ FROM  studentBelonging as t
                ) as d2
           WHERE d1.studentID=d2.studentID
       ) as d ON t.ID=d.studentID
+
+
+
+CREATE EVENT change_perm ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 15 SECOND
+    DO
+    UPDATE student, leaveApplication
+    SET entryPerm=0,  progress='finish'
+    WHERE student.ID=leaveApplication.studentID  AND progress='success';
+
+CREATE EVENT give_perm ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 15 SECOND
+    DO
+    UPDATE student, entryApplication
+    SET entryPerm=1,  progress='finish'
+    WHERE student.ID=entryApplication.studentID  AND progress='success';

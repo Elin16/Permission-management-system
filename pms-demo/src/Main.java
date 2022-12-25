@@ -29,7 +29,7 @@ public class Main {
         }
         System.out.println("Bye!");
         */
-        runFromFile("pms-demo/test/test0.txt");
+        runFromFile("pms-demo/test/student.normal");
     }
 
     public static void runFromFile(String fileName) throws Exception {
