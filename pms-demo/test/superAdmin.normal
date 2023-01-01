@@ -7,7 +7,7 @@ show-leave-app -w "ref"
 show-leave-app -w "wait"
 show-leave-app -w "ack"
 show-leave-app -w "ref"
-show-yearly-leave-time-count
+show-yearly-leave-time
 show-np-entry-app -d "5"
 show-np-entry-app -d "5" -u
 show-np-leave-app -d "3" -u
@@ -15,7 +15,7 @@ show-np-leave-app -d "3"
 show-most-entry-app -n "2"
 show-most-entry-app -n "2" -r "d" -id "1"
 show-most-leave-time -n "3"
-show-most-leave-time -n "3"  -r "d" -id "2"
+show-most-leave-time -n "2"  -r "d" -id "1"
 show-oos
 show-oos -u
 show-stay-oos

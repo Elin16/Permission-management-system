@@ -15,18 +15,19 @@ public class YearlyLeaveTime extends Transfer {
     //Major Query
     @Override
     protected String sqlBody(){
-        return "(SELECT belong.ID, (((IFNULL(d.LastIsOut, 0))*current_date+IFNULL(ins, 0))-(IFNULL(c.firstIsIn, 0))* (current_date-365)-IFNULL(oos, 0)) as yearly-leave-time\n" +
-                "FROM  studentBelonging as t\n" +
+        return
+                " FROM (SELECT belong.*, (((IFNULL(d.LastIsOut, 0))*TIMESTAMPDIFF(HOUR,\"2021-01-01 00:00:00\",current_timestamp)+IFNULL(ins, 0))-(IFNULL(c.firstIsIn, 0))* TIMESTAMPDIFF(HOUR,\"2021-01-01 00:00:00\", TIMESTAMPADD(YEAR,-1,current_timestamp))-IFNULL(oos, 0)) as yearly_leave_hours\n" +
+                "FROM  studentBelonging as belong\n" +
                 "          left join\n" +
                 "      (\n" +
-                "          SELECT studentID, IFNULL(SUM(date(IOTime)), 0) as ins\n" +
+                "          SELECT studentID, IFNULL(SUM(TIMESTAMPDIFF(HOUR,\"2021-01-01 00:00:00\",IOTime)), 0) as ins\n" +
                 "          FROM IOLog\n" +
                 "          WHERE datediff(curdate(),date(IOtime)) < 365 AND IOType='in'\n" +
                 "          GROUP BY studentID\n" +
                 "      ) as a on belong.ID=a.studentID\n" +
                 "          left join\n" +
                 "      (\n" +
-                "          SELECT studentID, IFNULL(SUM(date(IOTime)), 0) as oos\n" +
+                "          SELECT studentID, IFNULL(SUM(TIMESTAMPDIFF(HOUR, \"2021-01-01 00:00:00\",IOTime)), 0) as oos\n" +
                 "          FROM IOLog\n" +
                 "          WHERE datediff(curdate(),date(IOtime)) < 365  AND IOType='out'\n" +
                 "          GROUP BY studentID\n" +
@@ -66,7 +67,8 @@ public class YearlyLeaveTime extends Transfer {
                 "                   GROUP BY studentID\n" +
                 "               ) as d2\n" +
                 "          WHERE d1.studentID=d2.studentID\n" +
-                "      ) as d ON belong.ID=d.studentID;\n" +
-                ")as t";
+                "      ) as d ON belong.ID=d.studentID\n" +
+                "       ) as t\n" +
+                        "WHERE t.ID=t.ID \n";
     }
 }

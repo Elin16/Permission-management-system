@@ -136,7 +136,9 @@ public class CommandDealer {
     private void showQueryResult(String sql){
         try{
             dbs.printResultSet(dbs.query(sql));
+            // System.out.println(sql);
         }catch(Exception e){
+            System.out.println(sql);
             System.out.println("Print: System failed! Please try again!");
         }
     }
@@ -267,9 +269,10 @@ public class CommandDealer {
                         if(q.getCommandType() == UPDATE){
                             try{
                                 q.executeCMD();
-                                System.out.println("- user command:"+q.getMY_CMD());
-                                System.out.println("-sql:\n```mysql\n"+q.generateSQL()+"```");
+                                // System.out.println("- user command:"+q.getMY_CMD());
+                                // System.out.println("-sql:\n```mysql\n"+q.generateSQL()+"```");
                             }catch (Exception e){
+                                System.out.println(q.generateSQL());
                                 System.out.println("Executing failed!");
                             }
                         } else{

@@ -45,7 +45,7 @@ public class ExactReportQuery extends Transfer {
                 "                 WHERE datediff(current_date, h.reportDate) < "+ days + "\n" +
                 "                 GROUP BY h.studentID\n" +
                 "                ) AS c\n" +
-                "                WHERE c.maxT-'00:01:00' < c.minT)\n";
+                "                WHERE timestampdiff(minute, c.minT, c.maxT) < 1)\n";
     }
 
 }

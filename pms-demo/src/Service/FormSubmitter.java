@@ -31,6 +31,7 @@ public class FormSubmitter {
             HealthReportForm report = new HealthReportForm(
                     studentId,
                     jsonO.get("Report Date").toString(),
+                    jsonO.get("Report Time").toString(),
                     jsonO.get("Today's Body Temperature").toString(),
                     jsonO.get("Location").toString(),
                     jsonO.get("Comment").toString());

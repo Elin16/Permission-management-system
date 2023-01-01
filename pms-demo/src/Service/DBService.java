@@ -34,7 +34,7 @@ public class DBService {
 
     public boolean checkAdminLogin(String id, String userpass) throws Exception {
         String expectedPassword = dbRepo.findAdminPassByID(id);
-        System.out.println("check admin:" + id + " "+ userpass+" "+expectedPassword );
+        // System.out.println("check admin:" + id + " "+ userpass+" "+expectedPassword );
         return (Objects.equals(userpass, expectedPassword));
     }
 
@@ -42,11 +42,11 @@ public class DBService {
         List<String> sqls = new ArrayList<String>();
         sqls.add(String.format("insert into IOLog(studentID,IOTime,IOType,campusName) " +
                 "values ('%s', '%s', '%s', '%s')", id, IOTime, IOType, campusName));
-        System.out.printf("insert into IOLog(studentID,IOTime,IOType,campusName) " +
-                "values ('%s', '%s', '%s', '%s')%n", id, IOTime, IOType, campusName);
+        // System.out.printf("insert into IOLog(studentID,IOTime,IOType,campusName) " +
+               // "values ('%s', '%s', '%s', '%s')%n", id, IOTime, IOType, campusName);
         int newstate = (Objects.equals(IOType, "in")) ? 1 : 0;
         sqls.add(String.format("UPDATE student SET inSchool=%d WHERE ID=%s",newstate, id));
-        System.out.printf("UPDATE student SET inSchool=%d WHERE ID=%s%n",newstate, id);
+        // System.out.printf("UPDATE student SET inSchool=%d WHERE ID=%s%n",newstate, id);
         try{
             if(dbRepo.executeTransaction(sqls)) {
                 return true;

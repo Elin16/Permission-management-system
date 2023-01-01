@@ -8,6 +8,6 @@ public class CommandParser {
         return command.substring(indexBegin, indexEnd);
     }
     public boolean optionExist(String command, String op){
-        return (command.contains(" " + op + " "));
+        return (command.contains(" " + op + " ")) || (command.contains(" " + op) && (command.length()<=command.indexOf(" "+ op)+op.length()+1));
     }
 }

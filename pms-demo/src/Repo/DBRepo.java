@@ -86,11 +86,12 @@ public class DBRepo {
     }
     public int insert(String sql) throws Exception{
         Statement stmt = conn.createStatement();
-        System.out.println(sql);
+        // System.out.println(sql);
         try{
             int infulencedRows = stmt.executeUpdate(sql);
             return infulencedRows;
         } catch (Exception e){
+            System.out.println(sql);
             System.out.println("Insertion failed!");
         }
         return 0;

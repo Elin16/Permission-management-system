@@ -42,19 +42,22 @@ public class LongestLeaveTimeQuery extends Transfer {
     }
     @Override
     protected String sqlBody(){
-        return  "FROM(\n" +
-                "   SELECT belong.*, (((IFNULL(d.LastIsOut, 0))*current_date+IFNULL(ins, 0))-IFNULL(oos, 0))/ outTimes as averageLeave\n" +
+        return  " FROM( \n" +
+                "   SELECT belong.*, (\n" +
+                "    (IFNULL(d.LastIsOut, 0)*TIMESTAMPDIFF(HOUR,\"2021-1-1 00:00:00\", current_date)) +\n" +
+                "    ins - oos\n" +
+                "    )/ outTimes as average_leave_hour\n" +
                 "           FROM  studentBelonging as belong\n" +
                 "          left join\n" +
                 "      (\n" +
-                "          SELECT studentID, IFNULL(SUM(date(IOTime)), 0) as ins\n" +
+                "          SELECT studentID, IFNULL(SUM(TIMESTAMPDIFF(HOUR,\"2021-1-1 00:00:00\", IOTime)), 0) as ins\n" +
                 "          FROM IOLog\n" +
                 "          WHERE IOType='in'\n" +
                 "          GROUP BY studentID\n" +
                 "      ) as a on belong.ID=a.studentID\n" +
                 "          left join\n" +
                 "      (\n" +
-                "          SELECT studentID, IFNULL(SUM(date(IOTime)), 0) as oos, count(*) as outTimes\n" +
+                "          SELECT studentID, IFNULL(SUM(TIMESTAMPDIFF(HOUR,\"2021-1-1 00:00:00\", IOTime)), 0) as oos, count(*) as outTimes\n" +
                 "          FROM IOLog\n" +
                 "          WHERE IOType='out'\n" +
                 "          GROUP BY studentID\n" +
@@ -75,12 +78,11 @@ public class LongestLeaveTimeQuery extends Transfer {
                 "                   GROUP BY studentID\n" +
                 "               ) as d2\n" +
                 "          WHERE d1.studentID=d2.studentID\n" +
-                "      ) as d ON belong.ID=d.studentID" +
-                "   ) AS t \n" +
+                "      ) as d ON belong.ID=d.studentID   ) AS t\n" +
                 "WHERE t.ID=t.ID\n";
     }
     protected String topNAmount(String number){
-        return "   ORDER BY averageLeave DESC\n" +
+        return "   ORDER BY average_leave_hour DESC\n" +
                 "  LIMIT 0,"+number+"\n";
     }
     @Override

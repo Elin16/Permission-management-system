@@ -8,18 +8,20 @@ public class HealthReportForm extends Form {
     static String location;
     static String comment;
     static String date;
-    public HealthReportForm(String studentId, String date, String temperature, String location, String comment){
+    static String time;
+    public HealthReportForm(String studentId, String date, String time, String temperature, String location, String comment){
         this.title = "Health Report";
         this.studentId = studentId;
         this.date = date;
+        this.time = time;
         this.temperature = temperature;
         this.location = location;
         this.comment = comment;
     }
     public String generateInsertion(){
         String sql = String.format("INSERT INTO " +
-                        "healthLog(studentID, reportDate, bodyTemperature, onLocation, comments)" +
-                "values('%s', '%s', %s, '%s', '%s')", studentId, date, temperature, location, comment);
+                        "healthLog(studentID, reportDate, reportTime, bodyTemperature, onLocation, comments)" +
+                "values('%s', '%s', '%s', %s, '%s', '%s')", studentId, date, time, temperature, location, comment);
         return sql;
     }
     public String getStudentId(){
