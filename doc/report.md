@@ -2,12 +2,11 @@
 # 数据库PJ 实验报告
 [toc]
 ## 设计的 ER 图
-
+![ER模型](media/ER.png)
 ## 数据库表结构说明
 ### admin 
 - 存储院系管理员的有关信息
 - 主键为ID
-
 ```sql{.line-numbers}
 CREATE TABLE `admin` (
   `ID` decimal(11,0) NOT NULL,
@@ -145,15 +144,42 @@ CREATE TABLE `tutor` (
   `classID` varchar(30) NOT NULL
 ) ;
 ```
+## view studentBelonging
+由于经常需要按照学生所在班级、部门作为筛选条件，我们设计了`studentBelonging`视图来简化联查操作。
+```sql
+CREATE VIEW studentBelonging AS  
+SELECT student.ID, student.classID, class.dptID  
+FROM student, class, department  
+WHERE student.classID=class.ID 
+AND class.dptID=department.ID
+```
 ## 索引定义说明
+学生经常会查询本人的出入校申请，在统计离校时间、平均离校时长时也会把学号作为聚合条件。因此在存储出入校申请和进出校记录的表中添加了学号索引。
 ```sql{.line-numbers}
 ALTER TABLE leaveApplication ADD INDEX index_studentID(studentID);
 ALTER TABLE entryApplication ADD INDEX index_studentID(studentID);
 ALTER TABLE IOLog ADD INDEX index_studentID(studentID);
 ```
 ## 核心功能的SQL语句说明
+### 原子性与一致性
+1. 实现批准入校申请后打开权限，每隔15秒检查当前表格内已经审批成功的入校申请，并修改学生入校权限。
 
+```sql{.line-numbers}
+CREATE EVENT give_perm ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 15 SECOND
+    DO
+    UPDATE student, entryApplication
+    SET entryPerm=1,  progress='finish'
+    WHERE student.ID=entryApplication.studentID  AND progress='success';
+```
 
-## 触发器说明
+2. 批准离校申请24小时后关闭权限，每天定时检查已经审批成功的离校申请，并修改学生的入校权限。
+```sql{.line-numbers}
+CREATE EVENT change_perm ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 1 DAY
+    DO
+    UPDATE student, leaveApplication
+    SET entryPerm=0,  progress='finish'
+    WHERE student.ID=leaveApplication.studentID  AND progress='success';
+```
 
-
+3. 出入校打卡的同时修改在校状态
+   使用事务实现，若出入校或修改状态任意语句失败，则回滚。

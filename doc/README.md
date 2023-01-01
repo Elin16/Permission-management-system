@@ -27,8 +27,7 @@ author: Yixin Zhu, Yilin Huang
 ### Relation
 pass
 ## Query 
-student, class, department = scd
-scd用了很多次，要根据这个做一个视图吗？
+student, class, department = studnetBelonging
 | need | table | sql |
 | --   | --    | --  |
 |  学生过去 n 天的每日填报信息   |  healthReport, scd     |     |
@@ -120,7 +119,7 @@ $ show-exact-report -d <n days> (-u)
 $ show-most-ios-campus
 ```
 ### 审批页 t
-老师审批 ps 审批页也有查询功能
+权限：TUTOR及ADMIN
 ```bash
 $ OK <num> -r <reason>
 $ NO <num> -r <reason>
